@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Polyglot - Apprenez facilement de nouvelles langues</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    :root {
+      --primary-color: #3f51b5;
+      --secondary-color: #ff4081;
+      --spanish-color: #F1BF00;
+      --french-color: #318CE7;
+      --english-color: #CF142B;
+      --portuguese-color: #006600;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f5f5f5;
+      min-height: 100vh;
+    }
+    
+    .navbar-brand {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    
+    .hero-section {
+      text-align: center;
+      padding: 5rem 0;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    
+    .hero-heading {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+    
+    .language-grid {
+      margin-top: 4rem;
+    }
+    
+    .language-card {
+      transition: all 0.3s ease;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      border: none;
+      height: 100%;
+    }
+    
+    .language-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    
+    .card-spanish {
+      border-top: 5px solid var(--spanish-color);
+    }
+    
+    .card-french {
+      border-top: 5px solid var(--french-color);
+    }
+    
+    .card-english {
+      border-top: 5px solid var(--english-color);
+    }
+    
+    .card-portuguese {
+      border-top: 5px solid var(--portuguese-color);
+    }
+    
+    .language-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    .card-spanish .language-icon {
+      color: var(--spanish-color);
+    }
+    
+    .card-french .language-icon {
+      color: var(--french-color);
+    }
+    
+    .card-english .language-icon {
+      color: var(--english-color);
+    }
+    
+    .card-portuguese .language-icon {
+      color: var(--portuguese-color);
+    }
+    
+    .language-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    /* Styles pour niveaux de langue supprimés */
+    
+    .features-section {
+      padding: 5rem 0;
+      background-color: white;
+    }
+    
+    .feature-icon {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+    
+    .feature-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    
+    .cta-section {
+      padding: 5rem 0;
+      text-align: center;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    
+    .footer {
+      background-color: #343a40;
+      color: white;
+      padding: 3rem 0;
+    }
+    
+    .footer a {
+      color: #adb5bd;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    
+    .footer a:hover {
+      color: white;
+    }
+    
+    .footer-title {
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    
+    .social-icon {
+      font-size: 1.5rem;
+      margin-right: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .hero-heading {
+        font-size: 2.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<div class="container">
+<a class="navbar-brand" href="/">
+<i class="fas fa-language me-2"></i>Polyglot
+      </a>
+<button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class="navbar-nav ms-auto">
+<li class="nav-item">
+<a class="nav-link active" href="#">Accueil</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#features">Fonctionnalités</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#about">À propos</a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="#contact">Contact</a>
+</li>
+
+    {% if session['user'] %}
+      <li class="nav-item">
+<a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+</li>
+<li class="nav-item">
+<a class="nav-link text-danger" href="{{ url_for('logout') }}">Déconnexion</a>
+</li>
+    {% endif %}
+    </ul>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="hero-section">
+<div class="container">
+<h1 class="hero-heading">Apprenez une nouvelle langue facilement</h1>
+<p class="lead mb-4">Choisissez parmi nos 4 langues et commencez votre voyage linguistique dès aujourd'hui</p>
+<div class="row language-grid">
+<!-- Espagnol -->
+<div class="col-md-6 col-lg-3">
+<div class="card language-card card-spanish">
+<div class="card-body text-center p-4">
+<div class="language-icon">
+<i class="fas fa-sun"></i>
+</div>
+<h3 class="language-title">Espagnol</h3>
+<p class="text-muted mb-3">¡Hola! Aprende español de forma divertida</p>
+<a class="btn btn-outline-primary w-100 mb-2" href="/espagnol/">Commencer</a>
+</div>
+</div>
+</div>
+<!-- Français -->
+<div class="col-md-6 col-lg-3">
+<div class="card language-card card-french">
+<div class="card-body text-center p-4">
+<div class="language-icon">
+<i class="fas fa-utensils"></i>
+</div>
+<h3 class="language-title">Français</h3>
+<p class="text-muted mb-3">Bonjour ! Apprends le français facilement</p>
+<a class="btn btn-outline-primary w-100 mb-2" href="/francais">Commencer</a>
+</div>
+</div>
+</div>
+<!-- Anglais -->
+<div class="col-md-6 col-lg-3">
+<div class="card language-card card-english">
+<div class="card-body text-center p-4">
+<div class="language-icon">
+<i class="fas fa-globe-americas"></i>
+</div>
+<h3 class="language-title">Anglais</h3>
+<p class="text-muted mb-3">Hello! Learn English in a fun way</p>
+<a class="btn btn-outline-primary w-100 mb-2" href="/anglais">Commencer</a>
+</div>
+</div>
+</div>
+<!-- Portugais -->
+<div class="col-md-6 col-lg-3">
+<div class="card language-card card-portuguese">
+<div class="card-body text-center p-4">
+<div class="language-icon">
+<i class="fas fa-guitar"></i>
+</div>
+<h3 class="language-title">Portugais</h3>
+<p class="text-muted mb-3">Olá! Aprenda português facilmente</p>
+<a class="btn btn-outline-primary w-100 mb-2" href="/portugais">Commencer</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-5 bg-light">
+<div class="container text-center">
+<h2 class="mb-5">Explorez nos modules complémentaires</h2>
+<div class="row">
+<div class="col-md-4 mb-4">
+<div class="card h-100 shadow-sm border-0">
+<div class="card-body">
+<i class="fas fa-cross fa-3x text-primary mb-3"></i>
+<h5 class="card-title">Christ</h5>
+<p class="card-text">Approfondissez votre foi avec des enseignements bibliques, prières et méditations.</p>
+</div>
+</div>
+</div>
+<div class="col-md-4 mb-4">
+<div class="card h-100 shadow-sm border-0">
+<div class="card-body">
+<i class="fas fa-book fa-3x text-success mb-3"></i>
+<h5 class="card-title">Culture Générale</h5>
+<p class="card-text">Enrichissez vos connaissances à travers des quiz, anecdotes et faits historiques.</p>
+</div>
+</div>
+</div>
+<div class="col-md-4 mb-4">
+<div class="card h-100 shadow-sm border-0">
+<div class="card-body">
+<i class="fas fa-utensils fa-3x text-danger mb-3"></i>
+<h5 class="card-title">Recettes de Cuisine</h5>
+<p class="card-text">Découvrez des recettes savoureuses du monde entier pour tous les niveaux.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="features-section" id="features">
+<div class="container">
+<h2 class="text-center mb-5">Pourquoi choisir notre méthode d'apprentissage ?</h2>
+<div class="row">
+<div class="col-md-4 text-center mb-4">
+<div class="feature-icon">
+<i class="fas fa-comments"></i>
+</div>
+<h3 class="feature-title">Dialogues immersifs</h3>
+<p>Apprenez à travers des dialogues authentiques générés par IA, qui simulent des conversations réelles.</p>
+</div>
+<div class="col-md-4 text-center mb-4">
+<div class="feature-icon">
+<i class="fas fa-clone"></i>
+</div>
+<h3 class="feature-title">Flash Cards intelligentes</h3>
+<p>Mémorisez le vocabulaire efficacement grâce à notre système de flash cards adaptatif.</p>
+</div>
+<div class="col-md-4 text-center mb-4">
+<div class="feature-icon">
+<i class="fas fa-headphones"></i>
+</div>
+<h3 class="feature-title">Prononciation authentique</h3>
+<p>Écoutez et pratiquez avec des voix natives pour améliorer votre prononciation.</p>
+</div>
+</div>
+<div class="row mt-4">
+<div class="col-md-4 text-center mb-4">
+<div class="feature-icon">
+<i class="fas fa-book-open"></i>
+</div>
+<h3 class="feature-title">Histoires captivantes</h3>
+<p>Plongez dans des histoires interactives qui renforcent vos compétences linguistiques.</p>
+</div>
+<div class="col-md-4 text-center mb-4">
+<div class="feature-icon">
+<i class="fas fa-graduation-cap"></i>
+</div>
+<h3 class="feature-title">Exercices pratiques</h3>
+<p>Renforcez vos acquis avec des exercices variés adaptés à votre niveau.</p>
+</div>
+<div class="col-md-4 text-center mb-4">
+<div class="feature-icon">
+<i class="fas fa-mobile-alt"></i>
+</div>
+<h3 class="feature-title">Accessible partout</h3>
+<p>Apprenez où que vous soyez, sur tous vos appareils, même hors ligne.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Espace intentionnellement laissé vide - section CTA supprimée -->
+<!-- Footer -->
+<footer class="footer" id="contact">
+<div class="container">
+<div class="row">
+<div class="col-md-4 mb-4">
+<h4 class="footer-title">À propos de Polyglot</h4>
+<p>Polyglot est une plateforme d'apprentissage de langues innovante qui utilise l'intelligence artificielle pour créer des expériences d'apprentissage personnalisées.</p>
+</div>
+<div class="col-md-4 mb-4">
+<h4 class="footer-title">Liens rapides</h4>
+<ul class="list-unstyled">
+<li><a href="#">Accueil</a></li>
+<li><a href="#features">Fonctionnalités</a></li>
+<li><a href="#about">À propos</a></li>
+<li><a href="#contact">Contact</a></li>
+<li><a href="#">Confidentialité</a></li>
+<li><a href="#">Conditions d'utilisation</a></li>
+</ul>
+</div>
+<div class="col-md-4 mb-4">
+<h4 class="footer-title">Contactez-nous</h4>
+<p><i class="fas fa-envelope me-2"></i> info@polyglot-learn.com</p>
+<p><i class="fas fa-phone me-2"></i> +33 1 23 45 67 89</p>
+<div class="mt-4">
+<a class="social-icon" href="#"><i class="fab fa-facebook"></i></a>
+<a class="social-icon" href="#"><i class="fab fa-twitter"></i></a>
+<a class="social-icon" href="#"><i class="fab fa-instagram"></i></a>
+<a class="social-icon" href="#"><i class="fab fa-youtube"></i></a>
+</div>
+</div>
+</div>
+<div class="row mt-4">
+<div class="col-12 text-center">
+<p class="mb-0">© 2025 Polyglot. Tous droits réservés.</p>
+</div>
+</div>
+</div>
+</footer>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Animation smooth scroll pour les liens d'ancrage
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+    
+    // Code pour niveaux de langue supprimé
+  </script>
+</body>
+</html>

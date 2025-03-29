@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer une Histoire</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Navbar unifiée à ajouter en haut de chaque page -->
+<!-- Version corrigée de la barre de navigation pour tous les templates -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <i class="fas fa-language"></i> Apprendre l'Espagnol
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/"><i class="fas fa-book"></i> Vocabulaire</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/flashcard"><i class="fas fa-clone"></i> Flash Cards</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/dialogues"><i class="fas fa-comments"></i> Dialogues</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/stories"><i class="fas fa-book-open"></i> Histoires</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+    <style>
+        .container {
+            max-width: 800px;
+        }
+        .form-card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        .form-card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            border-radius: 10px 10px 0 0;
+            padding: 15px 20px;
+        }
+        .form-card-body {
+            padding: 20px;
+        }
+        .select2-container {
+            width: 100% !important;
+        }
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        .star-rating input {
+            display: none;
+        }
+        .star-rating label {
+            cursor: pointer;
+            width: 28px;
+            font-size: 30px;
+            color: #ddd;
+            margin: 0 2px;
+        }
+        .star-rating input:checked ~ label {
+            color: #ffc107;
+        }
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked + label:hover,
+        .star-rating input:checked ~ label:hover,
+        .star-rating input:checked ~ label:hover ~ label,
+        .star-rating label:hover ~ input:checked ~ label {
+            color: #ffdb70;
+        }
+        .theme-textarea {
+            min-height: 100px;
+        }
+        .navbar {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar bg-light p-3 rounded">
+            <h1>🇪🇸 Créer une Histoire</h1>
+            <div>
+                <a href="{{ url_for('stories_esp.index') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Retour aux histoires
+                </a>
+            </div>
+        </div>
+
+        <!-- Messages flash -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card form-card">
+            <div class="form-card-header">
+                <h3>Paramètres de l'histoire</h3>
+                <p class="text-muted mb-0">
+                    Définissez les critères pour générer une histoire avec 2 dialogues en espagnol
+                </p>
+            </div>
+            <div class="form-card-body">
+                <form method="POST" action="{{ url_for('stories_esp.create') }}">
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Titre de l'histoire <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tags" class="form-label">Sélectionner des tags (optionnel)</label>
+                        <select class="form-select" id="tags" name="tags" multiple>
+                            {% for tag in available_tags %}
+                                <option value="{{ tag }}">{{ tag }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Sélectionnez un ou plusieurs tags pour filtrer les mots à utiliser</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Niveau de difficulté (optionnel)</label>
+                        <div class="star-rating">
+                            <input type="radio" id="star5" name="rating" value="5" />
+                            <label for="star5" title="5 étoiles">★</label>
+                            <input type="radio" id="star4" name="rating" value="4" />
+                            <label for="star4" title="4 étoiles">★</label>
+                            <input type="radio" id="star3" name="rating" value="3" />
+                            <label for="star3" title="3 étoiles">★</label>
+                            <input type="radio" id="star2" name="rating" value="2" />
+                            <label for="star2" title="2 étoiles">★</label>
+                            <input type="radio" id="star1" name="rating" value="1" />
+                            <label for="star1" title="1 étoile">★</label>
+                        </div>
+                        <div class="form-text">Sélectionnez le niveau de difficulté pour filtrer les mots</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="theme" class="form-label">Thème de l'histoire</label>
+                        <textarea class="form-control theme-textarea" id="theme" name="theme" placeholder="Ex: Un voyage en Amérique du Sud, une conversation au restaurant, etc."></textarea>
+                        <div class="form-text">Donnez des précisions sur le thème souhaité pour l'histoire</div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        L'histoire contiendra 2 dialogues en espagnol utilisant les mots de votre vocabulaire. 
+                        Le système tentera d'utiliser jusqu'à 75 mots tout en créant une histoire cohérente.
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-magic me-2"></i>Générer l'histoire
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Initialiser Select2 pour une meilleure interface de sélection multiple
+            $('#tags').select2({
+                placeholder: 'Sélectionnez un ou plusieurs tags',
+                allowClear: true
+            });
+        });
+    </script>
+</body>
+</html>

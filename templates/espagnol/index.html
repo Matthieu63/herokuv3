@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Base URL pour toutes les URLs relatives -->
+  <base href="/espagnol/">
+  <title>Apprendre l'espagnol</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Quill CSS -->
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts - Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+  <!-- CSS existant -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+ 
+
+  
+  
+  <style>
+    :root {
+      --primary-color: #3f51b5;
+      --secondary-color: #ff4081;
+      --background-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+    
+    .navbar {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .container-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .page-title {
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    /* Cards */
+    .card-custom {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      margin-bottom: 20px;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .card-custom:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-header-custom {
+      background-color: rgba(63, 81, 181, 0.05);
+      border-bottom: 1px solid #eee;
+      padding: 15px 20px;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+    
+    .card-body-custom {
+      padding: 20px;
+    }
+    
+    /* Buttons */
+    .btn-custom-primary {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .btn-custom-primary:hover {
+      background-color: #303f9f;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-custom-secondary {
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .btn-custom-secondary:hover {
+      background-color: #e91e63;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Tags */
+    .tag-custom {
+      display: inline-block;
+      background-color: #f1f3f9;
+      color: var(--primary-color);
+      padding: 5px 12px;
+      margin: 3px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    
+    .tag-custom:hover, .tag-custom.active {
+      background-color: var(--primary-color);
+      color: white;
+      text-decoration: none;
+    }
+    
+    /* Tables */
+    .table-custom {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      background-color: white;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .table-custom th {
+      background-color: rgba(63, 81, 181, 0.1);
+      color: var(--primary-color);
+      padding: 15px;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    .table-custom td {
+      padding: 12px 15px;
+      border-top: 1px solid #eee;
+      vertical-align: middle;
+    }
+    
+    .table-custom tr:hover {
+      background-color: rgba(63, 81, 181, 0.05);
+    }
+    
+    /* Star Rating */
+    .star-rating-custom {
+      display: flex;
+    }
+    
+    .star-rating-custom .star {
+      font-size: 20px;
+      cursor: pointer;
+      color: #d4d4d4;
+      margin-right: 2px;
+    }
+    
+    .star-rating-custom .star.selected {
+      color: #ffc107;
+    }
+    
+    /* Forms */
+    .form-group-custom {
+      margin-bottom: 20px;
+    }
+    
+    .form-control-custom {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    
+    .form-control-custom:focus {
+      border-color: var(--primary-color);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.2);
+    }
+    
+    /* Pagination */
+    .pagination-custom {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 30px 0;
+    }
+    
+    .pagination-custom a, .pagination-custom span {
+      display: inline-block;
+      margin: 0 5px;
+      padding: 8px 12px;
+      color: var(--primary-color);
+      background-color: white;
+      border-radius: 4px;
+      text-decoration: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+    }
+    
+    .pagination-custom a:hover {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .pagination-custom span {
+      background-color: var(--primary-color);
+      color: white;
+      font-weight: bold;
+    }
+    
+    /* Footer */
+    .footer-custom {
+      background-color: #f1f1f1;
+      padding: 30px 0;
+      margin-top: 50px;
+      color: #666;
+    }
+    
+    .footer-custom a {
+      color: #666;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-custom a:hover {
+      color: var(--primary-color);
+    }
+    
+  /* Modal */
+
+
+    
+    
+    @keyframes modalFadeIn {
+      from {opacity: 0; transform: translateY(-20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    
+    .close:hover {
+      color: var(--text-color);
+    }
+    
+    /* Tab styling */
+    .nav-tabs .nav-link {
+      color: var(--text-color);
+      font-weight: 500;
+      border: none;
+      padding: 10px 20px;
+    }
+    
+    .nav-tabs .nav-link.active {
+      color: var(--primary-color);
+      border-bottom: 3px solid var(--primary-color);
+      background-color: transparent;
+    }
+    
+    .nav-tabs .nav-link:hover:not(.active) {
+      border-bottom: 3px solid #ccc;
+    }
+    
+    /* Action buttons */
+    .action-btn {
+      border: none;
+      background: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .action-btn.edit {
+      color: var(--primary-color);
+    }
+    
+    .action-btn.delete {
+      color: #dc3545;
+    }
+    
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    /* Ensure the editor has a minimum height */
+    .ql-editor {
+      min-height: 150px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .table-responsive {
+        overflow-x: auto;
+      }
+      
+      .pagination-custom a, .pagination-custom span {
+        padding: 6px 10px;
+        margin: 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+<!-- Dans tous les templates de la section espagnole, assurez-vous que les liens sont corrects -->
+
+<!-- Exemple de correction pour la navbar dans stories_index.html, dialogues_index.html, etc. -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">
+      <i class="fas fa-language"></i> Apprendre l'Espagnol
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/"><i class="fas fa-book"></i> Vocabulaire</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/flashcard"><i class="fas fa-clone"></i> Flash Cards</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/dialogues"><i class="fas fa-comments"></i> Dialogues</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/stories"><i class="fas fa-book-open"></i> Histoires</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+  
+  
+  
+  
+
+  <div class="container container-main">
+    <h1 class="page-title"><i class="fas fa-language me-2"></i>Apprendre l'espagnol</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} mt-3">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  
+    <!-- Actions principales -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <a href="/espagnol/bulk_add" class="btn btn-custom-primary">
+        <i class="fas fa-plus-circle me-2"></i>Ajouter plusieurs mots
+      </a>
+      <a href="/espagnol/admin/tags" class="btn btn-outline-primary">
+        <i class="fas fa-tags me-2"></i>Gérer les tags
+      </a>
+    </div>
+
+    <!-- Tabs navigation -->
+    <ul class="nav nav-tabs mb-4" id="mainTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="vocabulary-tab" data-bs-toggle="tab" data-bs-target="#vocabulary" type="button" role="tab" aria-controls="vocabulary" aria-selected="true">
+          <i class="fas fa-list me-2"></i>Liste de vocabulaire
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="add-word-tab" data-bs-toggle="tab" data-bs-target="#add-word" type="button" role="tab" aria-controls="add-word" aria-selected="false">
+          <i class="fas fa-plus me-2"></i>Ajouter un mot
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="mainTabContent">
+      <!-- Onglet vocabulaire -->
+      <div class="tab-pane fade show active" id="vocabulary" role="tabpanel" aria-labelledby="vocabulary-tab">
+        <!-- Filtres -->
+        <div class="card card-custom mb-4">
+          <div class="card-header-custom">
+            <h4 class="mb-0"><i class="fas fa-filter me-2"></i>Filtres</h4>
+          </div>
+          <div class="card-body-custom">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <h5>Filtrer par tag :</h5>
+                <!-- Dans le HTML, cette section devrait ressembler à ceci -->
+          <div class="d-flex flex-wrap">
+            <a href="/espagnol/?{% if rating_filter %}rating={{ rating_filter }}{% endif %}" class="tag-custom {% if not tag_filter %}active{% endif %}">Tous</a>
+            {% for t in all_tags %}
+              <a href="/espagnol/?tag={{ t }}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}" class="tag-custom {% if tag_filter == t %}active{% endif %}">{{ t }}</a>
+            {% endfor %}
+          </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <h5>Filtrer par note :</h5>
+                <div class="d-flex flex-wrap">
+                  <a href="/espagnol/?{% if tag_filter %}tag={{ tag_filter }}{% endif %}" class="tag-custom {% if not rating_filter %}active{% endif %}">Tous</a>
+                  <a href="/espagnol/?rating=1{% if tag_filter %}&tag={{ tag_filter }}{% endif %}" class="tag-custom {% if rating_filter=='1' %}active{% endif %}">1 ★</a>
+                  <a href="/espagnol/?rating=2{% if tag_filter %}&tag={{ tag_filter }}{% endif %}" class="tag-custom {% if rating_filter=='2' %}active{% endif %}">2 ★</a>
+                  <a href="/espagnol/?rating=3{% if tag_filter %}&tag={{ tag_filter }}{% endif %}" class="tag-custom {% if rating_filter=='3' %}active{% endif %}">3 ★</a>
+                  <a href="/espagnol/?rating=4{% if tag_filter %}&tag={{ tag_filter }}{% endif %}" class="tag-custom {% if rating_filter=='4' %}active{% endif %}">4 ★</a>
+                </div>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <!-- Mode Flash Card -->
+              <a href="/espagnol/flashcard?tag={{ tag_filter }}&rating={{ rating_filter }}" class="btn btn-custom-secondary">
+                <i class="fas fa-clone me-2"></i>Mode Flash Card
+              </a>
+              
+              <!-- Sélecteur de voix -->
+              <div class="d-flex align-items-center">
+                <label for="voice-selector" class="me-2"><strong>Voix :</strong></label>
+                <select id="voice-selector" class="form-select" style="width: auto;" onchange="setPollyVoice(this.value)">
+                  <option value="Lucia">Lucia (Femme)</option>
+                  <option value="Enrique">Enrique (Homme)</option>
+                  <option value="Conchita">Conchita (Femme)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+<!-- Remplacer le code du filtre de recherche avec cette version améliorée -->
+
+<!-- Ajouter cette partie juste après la section des filtres par tag et note dans la card-body-custom -->
+<div class="d-flex justify-content-between align-items-center mt-4">
+  <!-- Recherche de mots avec filtre instantané -->
+  <div class="search-container position-relative" style="width: 300px;">
+    <input type="text" id="word-search" class="form-control" placeholder="Rechercher un mot..." autocomplete="off">
+    <i class="fas fa-search position-absolute" style="right: 10px; top: 10px; color: #6c757d;"></i>
+    <div id="search-status" class="mt-2 small text-muted" style="display: none;"></div>
+  </div>
+  
+  <!-- Contrôles de tri -->
+  <div class="btn-group">
+    <button id="sort-az" class="btn btn-outline-primary">
+      <i class="fas fa-sort-alpha-down me-1"></i>A-Z
+    </button>
+    <button id="sort-za" class="btn btn-outline-primary">
+      <i class="fas fa-sort-alpha-up-alt me-1"></i>Z-A
+    </button>
+  </div>
+</div>
+
+<!-- Script pour le filtre de recherche instantané et le tri par ordre alphabétique -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // ------- Fonction de recherche instantanée -------
+// ------- Fonction de recherche instantanée -------
+const searchInput = document.getElementById('word-search');
+const searchStatus = document.getElementById('search-status');
+const table = document.getElementById('vocab-table');
+let allRows = [];
+let originalRowContent = []; // Stocker le HTML original de chaque cellule
+
+// Capturer toutes les lignes du tableau au chargement
+if (table) {
+  allRows = Array.from(table.querySelectorAll('tbody tr'));
+  
+  // Sauvegarder l'état d'affichage original et le contenu de chaque ligne
+  originalRowContent = allRows.map(row => {
+    const firstCell = row.querySelector('td:first-child');
+    return {
+      display: row.style.display,
+      html: firstCell ? firstCell.innerHTML : ''
+    };
+  });
+}
+
+// Événement pour la recherche "en direct" qui filtre directement le tableau
+if (searchInput) {
+  searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.trim().toLowerCase();
+    
+    // Si le champ de recherche est vide, réinitialiser le tableau
+    if (!searchTerm) {
+      // Réinitialiser toutes les lignes à leur état d'origine
+      allRows.forEach((row, index) => {
+        row.style.display = originalRowContent[index].display || '';
+        row.classList.remove('search-highlight');
+        
+        // Restaurer le HTML original de la première cellule
+        const firstCell = row.querySelector('td:first-child');
+        if (firstCell) {
+          firstCell.innerHTML = originalRowContent[index].html;
+        }
+      });
+      
+      searchStatus.style.display = 'none';
+      return;
+    }
+    
+    // Compter les correspondances
+    let matchCount = 0;
+    
+    // Filtrer les lignes du tableau en temps réel
+    allRows.forEach((row, index) => {
+      const wordCell = row.querySelector('td:first-child');
+      const wordText = wordCell.textContent.toLowerCase();
+      
+      if (wordText.includes(searchTerm)) {
+        // Afficher cette ligne
+        row.style.display = '';
+        matchCount++;
+        
+        // Mettre en surbrillance la partie correspondante
+        const originalHTML = originalRowContent[index].html;
+        const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+        
+        // Utiliser une approche plus sécuritaire pour remplacer uniquement le texte visible
+        // et non les balises HTML
+        let htmlWithMark = originalHTML;
+        const textContent = wordCell.textContent;
+        const matches = textContent.match(regex);
+        
+        if (matches) {
+          matches.forEach(match => {
+            // Assurer que nous remplaçons seulement le texte et non les balises
+            htmlWithMark = htmlWithMark.replace(
+              new RegExp(escapeRegex(match), 'g'), 
+              `<mark class="bg-light text-primary">${match}</mark>`
+            );
+          });
+          wordCell.innerHTML = htmlWithMark;
+        }
+        
+        // Ajouter une classe pour l'animation
+        row.classList.add('search-highlight');
+      } else {
+        // Masquer cette ligne
+        row.style.display = 'none';
+        row.classList.remove('search-highlight');
+      }
+    });
+    
+    // Afficher le statut de la recherche
+    if (matchCount > 0) {
+      searchStatus.textContent = `${matchCount} mot${matchCount > 1 ? 's' : ''} trouvé${matchCount > 1 ? 's' : ''}`;
+      searchStatus.style.display = 'block';
+    } else {
+      searchStatus.textContent = 'Aucun mot trouvé';
+      searchStatus.style.display = 'block';
+    }
+  });
+  
+  // Ajouter un événement pour restaurer le contenu original lorsque l'on efface la recherche
+  searchInput.addEventListener('search', function() {
+    if (!this.value) {
+      // Restaurer le contenu original de toutes les cellules
+      allRows.forEach((row, index) => {
+        const wordCell = row.querySelector('td:first-child');
+        
+        // Restaurer directement le HTML original stocké
+        if (wordCell) {
+          wordCell.innerHTML = originalRowContent[index].html;
+        }
+        
+        // Restaurer l'affichage
+        row.style.display = originalRowContent[index].display || '';
+        row.classList.remove('search-highlight');
+      });
+      
+      searchStatus.style.display = 'none';
+    }
+  });
+  
+  // Échapper les caractères spéciaux pour la regex
+  function escapeRegex(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+}
+    // ------- Fonction de tri par ordre alphabétique -------
+    const sortAzBtn = document.getElementById('sort-az');
+    const sortZaBtn = document.getElementById('sort-za');
+    
+    function sortTable(ascending = true) {
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      
+      // Trier les lignes
+      rows.sort((a, b) => {
+        const textA = a.querySelector('td:first-child').textContent.trim().toLowerCase();
+        const textB = b.querySelector('td:first-child').textContent.trim().toLowerCase();
+        return ascending ? textA.localeCompare(textB, 'es') : textB.localeCompare(textA, 'es');
+      });
+      
+      // Vider et reconstruire le tbody avec les lignes triées
+      rows.forEach(row => tbody.appendChild(row));
+      
+      // Mise à jour visuelle des boutons
+      sortAzBtn.classList.toggle('active', ascending);
+      sortZaBtn.classList.toggle('active', !ascending);
+      
+      // Mise à jour du style des boutons
+      sortAzBtn.classList.toggle('btn-primary', ascending);
+      sortAzBtn.classList.toggle('btn-outline-primary', !ascending);
+      sortZaBtn.classList.toggle('btn-primary', !ascending);
+      sortZaBtn.classList.toggle('btn-outline-primary', ascending);
+      
+      // Animation subtile des lignes pour indiquer le changement
+      rows.forEach((row, index) => {
+        row.style.opacity = '0';
+        row.style.transform = 'translateY(10px)';
+        row.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+        
+        setTimeout(() => {
+          row.style.opacity = '1';
+          row.style.transform = 'translateY(0)';
+        }, 50 + (index * 10)); // Effet cascade
+      });
+    }
+    
+    if (sortAzBtn) {
+      sortAzBtn.addEventListener('click', function() {
+        sortTable(true);
+      });
+    }
+    
+    if (sortZaBtn) {
+      sortZaBtn.addEventListener('click', function() {
+        sortTable(false);
+      });
+    }
+    
+    // Initialiser avec un tri A-Z par défaut
+    if (allRows.length > 0) {
+      sortTable(true);
+    }
+  });
+</script>
+
+<!-- CSS supplémentaire pour la recherche instantanée et le tri -->
+<style>
+  /* Animation pour les lignes correspondant à la recherche */
+  .search-highlight {
+    animation: highlight-pulse 1s ease;
+  }
+  
+  @keyframes highlight-pulse {
+    0% { background-color: rgba(63, 81, 181, 0.1); }
+    100% { background-color: transparent; }
+  }
+  
+  /* Animation pour la surbrillance du texte */
+  mark {
+    padding: 0 2px;
+    border-radius: 2px;
+    animation: mark-pulse 1.5s infinite alternate;
+  }
+  
+  @keyframes mark-pulse {
+    0% { background-color: rgba(63, 81, 181, 0.1); }
+    100% { background-color: rgba(63, 81, 181, 0.2); }
+  }
+  
+  /* Style pour l'input de recherche */
+  #word-search {
+    padding-right: 30px;
+    transition: all 0.3s;
+  }
+  
+  #word-search:focus {
+    box-shadow: 0 0 0 0.2rem rgba(63, 81, 181, 0.25);
+    border-color: var(--primary-color);
+  }
+  
+  #word-search:focus + i {
+    color: var(--primary-color);
+  }
+  
+  /* Animation pour indiquer un changement de tri */
+  .btn-group .btn.active {
+    box-shadow: none;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+  
+  .sort-animation {
+    animation: pulse 0.3s ease;
+  }
+</style>        
+        <!-- Pagination et contrôles -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <!-- Nombre de lignes par page -->
+          <form method="get" action="/espagnol/" class="d-flex align-items-center">
+            <label for="limit" class="me-2">Lignes par page :</label>
+            <select name="limit" id="limit" class="form-select" style="width: auto;" onchange="this.form.submit()">
+              <option value="10" {% if limit == 10 %}selected{% endif %}>10</option>
+              <option value="20" {% if limit == 20 %}selected{% endif %}>20</option>
+              <option value="50" {% if limit == 50 %}selected{% endif %}>50</option>
+            </select>
+            <input type="hidden" name="tag" value="{{ tag_filter }}">
+            <input type="hidden" name="rating" value="{{ rating_filter }}">
+          </form>
+          
+          <!-- Mini pagination -->
+          <div class="d-flex align-items-center">
+            {% if page > 1 %}
+              <a href="/espagnol/?page={{ page - 1 }}&limit={{ limit }}&tag={{ tag_filter }}&rating={{ rating_filter }}" class="btn btn-sm btn-outline-primary me-2">
+                <i class="fas fa-chevron-left"></i> Précédent
+              </a>
+            {% endif %}
+            <span class="px-2">Page {{ page }} / {{ total_pages }}</span>
+            {% if page < total_pages %}
+              <a href="/espagnol/?page={{ page + 1 }}&limit={{ limit }}&tag={{ tag_filter }}&rating={{ rating_filter }}" class="btn btn-sm btn-outline-primary ms-2">
+                Suivant <i class="fas fa-chevron-right"></i>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Tableau de vocabulaire -->
+        <div class="table-responsive">
+          <table id="vocab-table" class="table-custom">
+            <thead>
+              <tr>
+                <th>Mot</th>
+                <th>Synthèse</th>
+                <th>Image</th>
+                <th>Youglish</th>
+                <th>Son</th>
+                <th>Tags</th>
+                <th>Note</th>
+                <th style="width: 80px; text-align: center;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for word in words %}
+              <tr data-id="{{ word.id }}">
+                <td class="editable" data-field="word">
+                  {{ word.word|safe }}
+                  <!-- Icône visible seulement sur mobile -->
+                  <a href="{{ url_for('vocab_esp.word_detail', id=word.id) }}" title="Voir détails" class="ms-2 d-md-none" onclick="event.stopPropagation()">
+
+                    <i class="fas fa-info-circle"></i>
+                  </a>
+                </td>
+                
+                <td class="editable" data-field="synthese">{{ word.synthese|safe }}</td>
+                <td data-field="image">
+                  {% if word.image %}
+                    <img src="{{ word.image }}"
+                         alt="Image de {{ word.word }}"
+                         class="rounded img-thumbnail open-image-modal"
+                         style="max-width:50px; cursor:pointer;"
+                         data-bs-toggle="modal"
+                         data-bs-target="#imageModal"
+                         data-image="{{ word.image }}"
+                         onclick="event.stopPropagation()">
+                  {% else %}
+                    <i class="fa-solid fa-image text-muted"></i>
+                  {% endif %}
+                </td>
+                
+                
+                                
+                <td data-field="youglish">
+                  <!-- Lien Youglish existant -->
+                  <a href="javascript:void(0);" onclick="window.open('{{ word.youglish }}', '', 'width=800,height=600');" title="Voir sur Youglish" class="btn btn-sm btn-outline-primary">
+                    <i class="fa-solid fa-globe"></i>
+                  </a>
+                
+                  {% set infinitive = word.word|lower %}
+                  {% if infinitive.endswith('ar') or infinitive.endswith('er') or infinitive.endswith('ir') %}
+                    <br>
+                    <a href="https://www.spanishdict.com/conjugate/{{ infinitive }}"
+                      onclick="window.open(this.href, 'conjugation','width=1200,height=900'); return false;"
+                      title="Conjugaison sur SpanishDict"
+                      class="btn btn-sm btn-outline-secondary mt-1">
+                      <i class="fa-solid fa-pen"></i>
+                    </a>
+
+                  {% endif %}
+                </td>
+                
+                <td>
+                  <button class="btn btn-sm btn-outline-primary play-btn" onclick="playAudio('{{ word.word }}')" title="Lire">
+                    <i class="fa-solid fa-play"></i>
+                  </button>
+                </td>
+                <td class="editable" data-field="tags">{{ word.tags|safe }}</td>
+                <td>
+                  <div class="star-rating-custom" data-id="{{ word.id }}">
+                    {% set note = word.note or 0 %}
+                    {% for i in range(1, 5) %}
+                      <span class="star{% if i <= note %} selected{% endif %}" data-value="{{ i }}">★</span>
+                    {% endfor %}
+                  </div>
+                </td>
+                <td style="text-align: center;">
+                  <button class="action-btn delete" data-id="{{ word.id }}" title="Supprimer">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Pagination complète -->
+        <div class="pagination-custom mt-4">
+          {% if page > 1 %}
+            <a href="/espagnol/?page=1&limit={{ limit }}&tag={{ tag_filter }}&rating={{ rating_filter }}" title="Première page">
+              <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="/espagnol/?page={{ page - 1 }}&limit={{ limit }}&tag={{ tag_filter }}&rating={{ rating_filter }}" title="Page précédente">
+              <i class="fas fa-angle-left"></i>
+            </a>
+          {% endif %}
+          
+          {% set start = [1, page - 2]|max %}
+          {% set end = [total_pages, page + 2]|min %}
+          
+          {% if start > 1 %}
+            <span>...</span>
+          {% endif %}
+          
+          {% for p in range(start, end + 1) %}
+            {% if p == page %}
+              <span>{{ p }}</span>
+            {% else %}
+              <a href="/espagnol/?page={{ p }}&limit={{ limit }}&tag={{ tag_filter }}&rating={{ rating_filter }}">{{ p }}</a>
+            {% endif %}
+          {% endfor %}
+          
+          {% if end < total_pages %}
+            <span>...</span>
+          {% endif %}
+          
+          {% if page < total_pages %}
+            <a href="/espagnol/?page={{ page + 1 }}&limit={{ limit }}&tag={{ tag_filter }}&rating={{ rating_filter }}" title="Page suivante">
+              <i class="fas fa-angle-right"></i>
+            </a>
+            <a href="/espagnol/?page={{ total_pages }}&limit={{ limit }}&tag={{ tag_filter }}&rating={{ rating_filter }}" title="Dernière page">
+              <i class="fas fa-angle-double-right"></i>
+            </a>
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Onglet ajout de mot -->
+      <div class="tab-pane fade" id="add-word" role="tabpanel" aria-labelledby="add-word-tab">
+        <div class="card card-custom">
+          <div class="card-header-custom">
+            <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Ajouter un nouveau mot</h4>
+          </div>
+          <div class="card-body-custom">
+            <form id="add-word-form" 
+                  action="{{ url_for('vocab_esp.add_word') }}" 
+                  method="post" 
+                  class="needs-validation" 
+                  enctype="multipart/form-data" 
+                  novalidate>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group-custom">
+                    <label for="word" class="form-label">Mot :</label>
+                    <input type="text" id="word" name="word" class="form-control-custom" required>
+                    <div class="invalid-feedback">Veuillez entrer un mot</div>
+                  </div>
+                
+                  <div class="form-group-custom">
+                    <label for="tags">Tags :</label>
+                    <select id="tags" name="tags" multiple class="form-control-custom">
+                      {% for tag in available_tags %}
+                        <option value="{{ tag }}">{{ tag }}</option>
+                      {% endfor %}
+                    </select>
+                    <small class="text-muted">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs tags</small>
+                  </div>
+                  
+                  <div class="form-group-custom">
+                    <label for="youglish">Lien Youglish :</label>
+                    <input type="url" id="youglish" name="youglish" class="form-control-custom">
+                    <small class="text-muted">Généré automatiquement à partir du mot</small>
+                  </div>
+                  
+                  <div class="form-group-custom">
+                    <label for="image">Image :</label>
+                    <input type="file" id="image" name="image" accept="image/*" class="form-control">
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <div class="form-group-custom">
+                    <label for="synthese">Synthèse :</label>
+                    <div id="synthese-editor" class="editor-container" style="height: 150px;"></div>
+                  </div>
+                  
+                  <div class="form-check mb-3">
+                    <input type="checkbox" id="disable-auto-synthese" name="disable_auto_synthese" class="form-check-input">
+                    <label class="form-check-label" for="disable-auto-synthese">
+                      Ne pas générer automatiquement la synthèse
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" name="synthese" id="hidden-synthese">
+
+              <!-- Conteneur de la barre de progression -->
+<div id="progress-bar-container" style="display: none; margin-bottom: 15px;">
+  <div class="progress">
+    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+         style="width: 0%;" aria-valuemin="0" aria-valuemax="100">0%</div>
+  </div>
+</div>
+
+              <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-custom-primary">
+                  <i class="fas fa-save me-2"></i>Ajouter le mot
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Fenêtre modale pour éditer le contenu -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="m-0">Modifier le contenu</h3>
+        <span class="close">&times;</span>
+      </div>
+      <div id="modal-editor" style="height: 200px;"></div>
+      <div id="modal-tags" style="display: none;">
+        <select id="modal-tags-select" multiple class="form-control mt-3" style="width: 100%; height: 200px;">
+          {% for tag in available_tags %}
+            <option value="{{ tag }}">{{ tag }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button id="save-button" class="btn btn-custom-primary mt-4 float-end">
+        <i class="fas fa-save me-2"></i>Sauvegarder
+      </button>
+    </div>
+  </div>
+  
+  <!-- Fenêtre modale pour confirmer la suppression -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="m-0">Confirmation</h3>
+        <span class="close">&times;</span>
+      </div>
+      <p>Êtes-vous sûr de vouloir supprimer ce mot ?</p>
+      <div class="d-flex justify-content-end mt-4">
+        <button id="cancel-delete" class="btn btn-outline-secondary me-2">Annuler</button>
+        <button id="confirm-delete" class="btn btn-danger">
+          <i class="fas fa-trash me-2"></i>Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="footer-custom">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 text-md-start text-center mb-3 mb-md-0">
+          <h5>Navigation rapide</h5>
+          <div class="d-flex flex-column flex-md-row justify-content-md-start justify-content-center">
+            <a href="/espagnol/" class="me-md-3">Vocabulaire</a>
+            <a href="/espagnol/flashcard" class="me-md-3">Flash Cards</a>
+            <a href="/espagnol/dialogues" class="me-md-3">Dialogues</a>
+            <a href="/espagnol/stories">Histoires</a>
+          </div>
+        </div>
+        <div class="col-md-6 text-md-end text-center">
+          <p class="mb-0">© 2025 Apprendre l'Espagnol - Tous droits réservés</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+
+  <!-- Script pour générer automatiquement le lien Youglish dans le formulaire -->
+  <script>
+    document.getElementById('word').addEventListener('input', function() {
+      let wordVal = this.value.trim();
+      if (wordVal) {
+        document.getElementById('youglish').value = "https://youglish.com/pronounce/" 
+                                                  + encodeURIComponent(wordVal) 
+                                                  + "/spanish";
+      } else {
+        document.getElementById('youglish').value = "";
+      }
+    });
+  </script>
+  
+  <!-- jQuery (nécessaire pour Bootstrap) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.querySelectorAll('.open-image-modal').forEach(img =>
+      img.addEventListener('click', e =>
+        document.getElementById('modalImage').src = e.currentTarget.dataset.image
+      )
+    );
+  </script>
+  
+  <!-- Quill JS -->
+  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  
+  <!-- Script pour Amazon Polly TTS -->
+  <script>
+    // Variables pour la gestion de l'audio
+    let currentAudio = null;
+    let currentVoice = 'Lucia'; // Voix par défaut, sera mise à jour
+
+    // Fonction pour charger la voix préférée au chargement de la page
+    document.addEventListener('DOMContentLoaded', async function() {
+      try {
+        const response = await fetch('/espagnol/api/voice-settings/default');
+        if (response.ok) {
+          const data = await response.json();
+          currentVoice = data.voice;
+          console.log('Voix par défaut chargée:', currentVoice);
+          
+          // Mettre à jour le sélecteur de voix
+          const voiceSelector = document.getElementById('voice-selector');
+          if (voiceSelector) {
+            voiceSelector.value = currentVoice;
+          }
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement de la voix par défaut:', error);
+      }
+      
+      // Initialisation de l'éditeur Quill pour la synthèse
+      const quillSynthese = new Quill('#synthese-editor', {
+        theme: 'snow',
+        modules: {
+          toolbar: [
+            [{ 'color': [] }, { 'background': [] }],
+            ['bold', 'italic', 'underline'],
+            [{ header: [1, 2, 3, false] }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ['link']
+          ]
+        }
+      });
+      
+      // Initialisation de l'éditeur modal pour l'édition
+      const quillModal = new Quill('#modal-editor', {
+        theme: 'snow',
+        modules: {
+          toolbar: [
+            [{ 'color': [] }, { 'background': [] }],
+            ['bold', 'italic', 'underline'],
+            [{ header: [1, 2, 3, false] }],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ['link']
+          ]
+        }
+      });
+      
+      let currentWordId = null;
+      let currentField = null;
+      let currentCell = null;
+      
+      // Gestion du formulaire d'ajout
+ // Version corrigée du code JavaScript pour soumettre le formulaire d'ajout de mot
+
+// Dans le gestionnaire d'événement submit du formulaire
+// Correction pour résoudre l'erreur "Unsupported Media Type"
+
+// 1. Modification du formulaire HTML - ajoutez l'attribut enctype et retirez l'attribut action
+// <form id="add-word-form" method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
+
+// 2. Correction du code JavaScript pour la soumission du formulaire
+document.addEventListener('DOMContentLoaded', function() {
+// Gestion du formulaire d'ajout de mot - version simplifiée
+var form = document.getElementById('add-word-form');
+var hiddenSynthese = document.getElementById('hidden-synthese');
+  
+if (form) {
+  form.addEventListener('submit', function(e) {
+    // Empêcher la soumission du formulaire si le champ mot est vide
+    var wordField = document.getElementById('word');
+    if (!wordField.value.trim()) {
+      e.preventDefault();
+      alert('Veuillez entrer un mot');
+      return false;
+    }
+    
+    // Récupérer le contenu de l'éditeur Quill et l'insérer dans le champ caché
+    var quillEditor = Quill.find(document.querySelector('#synthese-editor'));
+    if (quillEditor) {
+      hiddenSynthese.value = quillEditor.root.innerHTML;
+    }
+    
+    // Afficher une indication visuelle que le formulaire est en cours d'envoi
+    var submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Ajout en cours...';
+    
+    // Laisser le formulaire se soumettre normalement
+    // La redirection sera gérée côté serveur
+  });
+}
+// Gestion du formulaire d'ajout
+const addWordForm = document.getElementById('add-word-form');
+if (addWordForm) {
+  addWordForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const submitButton = addWordForm.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Ajout en cours...';
+    
+    const word = document.getElementById('word').value.trim();
+    if (!word) {
+      alert('Veuillez entrer un mot');
+      submitButton.disabled = false;
+      submitButton.innerHTML = '<i class="fas fa-save me-2"></i>Ajouter le mot';
+      return;
+    }
+    
+    // Pour un formulaire avec fichier, nous devons utiliser FormData
+    const formData = new FormData();
+    formData.append('word', word);
+    
+    // Récupération du contenu de l'éditeur Quill pour la synthèse
+    const synthese = document.querySelector('#synthese-editor .ql-editor').innerHTML;
+    formData.append('synthese', synthese);
+    
+    const youglish = document.getElementById('youglish').value.trim();
+    formData.append('youglish', youglish);
+    
+    const tagsSelect = document.getElementById('tags');
+    const selectedTags = Array.from(tagsSelect.selectedOptions).map(option => option.value);
+    formData.append('tags', selectedTags.join(', '));
+    
+    // Case à cocher pour désactiver la génération automatique
+    const disableAutoSynthese = document.getElementById('disable-auto-synthese').checked;
+    formData.append('disable_auto_synthese', disableAutoSynthese);
+    
+    // Gestion du fichier image
+    const imageInput = document.getElementById('image');
+    if (imageInput.files.length > 0) {
+      formData.append('image', imageInput.files[0]);
+    }
+    
+    // Obtenir l'URL correcte à partir de l'attribut action du formulaire
+    const formAction = "/espagnol/add";
+    
+    // Envoi des données via fetch
+    fetch(formAction, {
+      method: 'POST',
+      body: formData  // Ne pas définir de Content-Type, le navigateur le fera automatiquement avec le bon boundary
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Erreur réseau: ' + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.status === 'success') {
+        // Afficher un message de succès
+        const successAlert = document.createElement('div');
+        successAlert.className = 'alert alert-success alert-dismissible fade show';
+        successAlert.innerHTML = `
+          <strong>Succès!</strong> Le mot "${word}" a été ajouté avec succès.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        addWordForm.insertAdjacentElement('beforebegin', successAlert);
+        
+        // Réinitialiser le formulaire
+        addWordForm.reset();
+        const quillEditor = Quill.find(document.querySelector('#synthese-editor'));
+        if (quillEditor) {
+          quillEditor.setText('');
+        }
+        
+        // Réactiver le bouton
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fas fa-save me-2"></i>Ajouter le mot';
+        
+        // Recharger la liste après 2 secondes - utiliser une redirection explicite
+        setTimeout(() => {
+        window.location.href = "/espagnol/";  // URL explicite vers la page d'accueil
+        }, 2000);
+      } else {
+        console.error('Erreur lors de l\'ajout:', data.message);
+        alert('Erreur lors de l\'ajout: ' + (data.message || 'Une erreur est survenue'));
+        submitButton.disabled = false;
+        submitButton.innerHTML = '<i class="fas fa-save me-2"></i>Ajouter le mot';
+      }
+    })
+    .catch(error => {
+      console.error('Erreur:', error);
+      alert('Erreur lors de l\'ajout du mot: ' + error.message);
+      submitButton.disabled = false;
+      submitButton.innerHTML = '<i class="fas fa-save me-2"></i>Ajouter le mot';
+    });
+  });
+}
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      sendData(event.target.result);
+    };
+    reader.readAsDataURL(file);
+  } else {
+    sendData("");
+  }
+});
+      
+      // Gestion de l'édition via la modale pour les cellules éditables
+      document.querySelectorAll('td.editable').forEach(cell => {
+        cell.addEventListener('click', function(e) {
+          currentWordId = cell.closest('tr').getAttribute('data-id');
+          currentField = cell.getAttribute('data-field');
+          currentCell = cell;
+          
+          if (currentField === 'image') {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.onchange = function() {
+              const file = fileInput.files[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                  const newImageData = event.target.result;
+                  fetch('/espagnol/update_word', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: currentWordId, field: 'image', value: newImageData })
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    if (data.status === 'success') {
+                      currentCell.innerHTML = `<img src="${newImageData}" alt="Image" style="max-width:50px; max-height:50px; cursor:pointer;" class="rounded">`;
+                    } else {
+                      console.error('Erreur lors de la mise à jour de l\'image');
+                      alert('Erreur lors de la mise à jour de l\'image');
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de la mise à jour de l\'image');
+                  });
+                };
+                reader.readAsDataURL(file);
+              }
+            };
+            fileInput.click();
+            return;
+          }
+          
+          const modal = document.getElementById('editModal');
+          
+          if (currentField === 'tags') {
+            document.getElementById('modal-editor').style.display = 'none';
+            document.getElementById('modal-tags').style.display = 'block';
+            const currentTags = cell.innerHTML.replace(/<[^>]*>/g, '').split(',').map(t => t.trim());
+            const select = document.getElementById('modal-tags-select');
+            Array.from(select.options).forEach(option => {
+              option.selected = currentTags.includes(option.value);
+            });
+          } else {
+            document.getElementById('modal-tags').style.display = 'none';
+            document.getElementById('modal-editor').style.display = 'block';
+            quillModal.clipboard.dangerouslyPasteHTML(cell.innerHTML);
+          }
+          
+          modal.style.display = 'block';
+        });
+      });
+      
+      // Gestion de la fermeture des modales
+      document.querySelectorAll('.modal .close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', function() {
+          this.closest('.modal').style.display = 'none';
+        });
+      });
+      
+      // Fermer les modales en cliquant en dehors
+      window.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal')) {
+          event.target.style.display = 'none';
+        }
+      });
+      
+      // Sauvegarde des modifications depuis la modale
+      document.getElementById('save-button').addEventListener('click', function() {
+        let formattedContent;
+        if (currentField === 'tags') {
+          const select = document.getElementById('modal-tags-select');
+          const selectedTags = Array.from(select.selectedOptions).map(option => option.value);
+          formattedContent = selectedTags.join(', ');
+        } else {
+          formattedContent = quillModal.root.innerHTML;
+        }
+        
+        // Envoyer les modifications au serveur
+        fetch('/espagnol/update_word', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: currentWordId, field: currentField, value: formattedContent })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            // Mettre à jour la cellule avec le nouveau contenu
+            currentCell.innerHTML = formattedContent;
+            document.getElementById('editModal').style.display = 'none';
+            
+            // Afficher un message de succès temporaire
+            const successToast = document.createElement('div');
+            successToast.className = 'position-fixed bottom-0 end-0 p-3';
+            successToast.style.zIndex = '5';
+            successToast.innerHTML = `
+              <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                  <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>Modification enregistrée
+                  </div>
+                  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+              </div>
+            `;
+            document.body.appendChild(successToast);
+            
+            // Afficher le toast
+            const toast = new bootstrap.Toast(successToast.querySelector('.toast'), { delay: 3000 });
+            toast.show();
+            
+            // Supprimer le toast après sa disparition
+            setTimeout(() => {
+              successToast.remove();
+            }, 3500);
+          } else {
+            console.error('Erreur lors de la mise à jour');
+            alert('Erreur lors de la mise à jour: ' + (data.message || 'Une erreur est survenue'));
+          }
+        })
+        .catch(error => {
+          console.error('Erreur:', error);
+          alert('Erreur lors de la mise à jour du contenu');
+        });
+      });
+      
+      // Configuration de la suppression d'un mot
+      let wordIdToDelete = null;
+      
+      document.querySelectorAll('.delete').forEach(button => {
+        button.addEventListener('click', function() {
+          wordIdToDelete = this.getAttribute('data-id');
+          const deleteModal = document.getElementById('deleteModal');
+          deleteModal.style.display = 'block';
+        });
+      });
+      
+      // Annuler la suppression
+      document.getElementById('cancel-delete').addEventListener('click', function() {
+        document.getElementById('deleteModal').style.display = 'none';
+        wordIdToDelete = null;
+      });
+      
+      // Confirmer la suppression
+      document.getElementById('confirm-delete').addEventListener('click', function() {
+        if (!wordIdToDelete) return;
+        
+        const btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Suppression...';
+        
+        fetch('{{ url_for("vocab_esp.delete_word") }}', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: wordIdToDelete })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            // Fermer la modale
+            document.getElementById('deleteModal').style.display = 'none';
+            
+            // Supprimer visuellement la ligne du mot
+            const row = document.querySelector(`tr[data-id="${wordIdToDelete}"]`);
+            if (row) {
+              row.style.backgroundColor = '#ffdddd';
+              row.style.transition = 'opacity 0.5s';
+              row.style.opacity = '0';
+              setTimeout(() => {
+                row.remove();
+              }, 500);
+            }
+            
+            // Afficher un message de succès
+            const successToast = document.createElement('div');
+            successToast.className = 'position-fixed bottom-0 end-0 p-3';
+            successToast.style.zIndex = '5';
+            successToast.innerHTML = `
+              <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                  <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>Mot supprimé avec succès
+                  </div>
+                  <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+              </div>
+            `;
+            document.body.appendChild(successToast);
+            
+            // Afficher le toast
+            const toast = new bootstrap.Toast(successToast.querySelector('.toast'), { delay: 3000 });
+            toast.show();
+            
+            // Supprimer le toast après sa disparition
+            setTimeout(() => {
+              successToast.remove();
+              
+              // Si la table est vide, recharger la page
+              if (document.querySelectorAll('#vocab-table tbody tr').length <= 1) {
+                location.reload();
+              }
+            }, 3500);
+          } else {
+            console.error("Erreur lors de la suppression:", data.message);
+            alert("Erreur lors de la suppression: " + (data.message || "Une erreur est survenue"));
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-trash me-2"></i>Supprimer';
+          }
+        })
+        .catch(error => {
+          console.error("Erreur:", error);
+          alert("Erreur lors de la suppression");
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-trash me-2"></i>Supprimer';
+        });
+      });
+      
+      // Gestion de la notation par étoiles
+      document.querySelectorAll('.star-rating-custom').forEach(ratingDiv => {
+        ratingDiv.querySelectorAll('.star').forEach(starElem => {
+          starElem.addEventListener('click', function() {
+            const ratingValue = parseInt(starElem.getAttribute('data-value'));
+            const wordId = ratingDiv.getAttribute('data-id');
+            
+            // Mettre à jour visuellement les étoiles
+            ratingDiv.querySelectorAll('.star').forEach(s => {
+              if (parseInt(s.getAttribute('data-value')) <= ratingValue) {
+                s.classList.add('selected');
+              } else {
+                s.classList.remove('selected');
+              }
+            });
+            
+            // Envoyer la mise à jour au serveur
+            fetch('{{ url_for("vocab_esp.update_note") }}', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: wordId, note: ratingValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.status !== 'success') {
+                console.error('Erreur lors de l\'enregistrement de la note');
+                alert('Erreur lors de l\'enregistrement de la note');
+              }
+            })
+            .catch(error => {
+              console.error('Erreur:', error);
+              alert('Erreur lors de l\'enregistrement de la note');
+            });
+          });
+        });
+      });
+    });
+
+    // Fonction pour jouer l'audio via Amazon Polly
+    async function playAudio(word) {
+      // Arrêter l'audio en cours s'il y en a un
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+      }
+      
+      try {
+        // Afficher un indicateur de chargement à côté du bouton
+        const button = event.currentTarget;
+        const originalIcon = button.innerHTML;
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        button.disabled = true;
+        
+        // Faire la requête à l'API Polly
+        const response = await fetch('/espagnol/api/polly/speak', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            text: word,
+            voice: currentVoice,
+            language: 'es-ES'
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+        
+        // Convertir la réponse en blob audio
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        
+        // Créer et jouer l'élément audio
+        currentAudio = new Audio(audioUrl);
+        
+        // Événement de fin de lecture
+        currentAudio.onended = function() {
+          currentAudio = null;
+          // Nettoyer l'URL
+          URL.revokeObjectURL(audioUrl);
+          // Restaurer l'état du bouton
+          button.innerHTML = originalIcon;
+          button.disabled = false;
+        };
+        
+        // Événement d'erreur
+        currentAudio.onerror = function(e) {
+          console.error('Erreur de lecture audio:', e);
+          currentAudio = null;
+          // Nettoyer l'URL
+          URL.revokeObjectURL(audioUrl);
+          // Restaurer l'état du bouton
+          button.innerHTML = originalIcon;
+          button.disabled = false;
+        };
+        
+        // Lancer la lecture
+        await currentAudio.play();
+      } catch (error) {
+        console.error('Erreur lors de la synthèse vocale:', error);
+        alert('Erreur lors de la lecture audio. Veuillez réessayer.');
+        
+        // Restaurer l'état du bouton en cas d'erreur
+        if (event && event.currentTarget) {
+          event.currentTarget.innerHTML = '<i class="fa-solid fa-play"></i>';
+          event.currentTarget.disabled = false;
+        }
+      }
+    }
+
+    // Fonction pour sélectionner une voix différente
+    function setPollyVoice(voice) {
+      currentVoice = voice;
+      
+      // Sauvegarder la préférence via une requête API
+      fetch('/espagnol/api/voice-settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          voice_a: voice,
+          voice_b: voice
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          // Afficher une confirmation visuelle que la voix a été changée
+          const voiceSelector = document.getElementById('voice-selector');
+          const originalBg = voiceSelector.style.backgroundColor;
+          
+          voiceSelector.style.backgroundColor = '#d4edda';
+          setTimeout(() => {
+            voiceSelector.style.backgroundColor = originalBg;
+          }, 500);
+        }
+      })
+      .catch(error => {
+        console.error('Erreur lors de la sauvegarde de la préférence de voix:', error);
+      });
+    }
+  </script>
+  <!-- Modal d’aperçu d’image -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="modalImage" class="img-fluid" style="max-width:80%; max-height:80vh;" alt="Aperçu image">
+
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  // Vérification de doublon lors du quitter du champ "word"
+  document.getElementById('word').addEventListener('blur', function() {
+    const wordValue = this.value.trim();
+    if (!wordValue) return;
+    fetch("{{ url_for('vocab_esp.check_duplicate') }}", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ word: wordValue })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'duplicate') {
+        alert("Ce mot existe déjà : " + data.word.word);
+      }
+    })
+    .catch(error => console.error('Erreur lors de la vérification du doublon:', error));
+  });
+</script>
+<script src="{{ url_for('static', filename='js/progress.js') }}"></script>
+
+</body>
+</html>

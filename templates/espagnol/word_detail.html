@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Détails du mot - {{ word.word }}</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Style pour les étoiles cliquables */
+    .star-rating {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .star-rating .star {
+      font-size: 28px;
+      cursor: pointer;
+      color: #d4d4d4;
+      transition: all 0.2s;
+    }
+    
+    .star-rating .star.selected {
+      color: #ffc107;
+    }
+    
+    .star-rating .star:hover {
+      transform: scale(1.1);
+    }
+    
+    /* Style pour l'image du mot */
+    .word-image {
+      max-width: 300px;
+      max-height: 300px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    
+    /* Animation pour le feedback de mise à jour */
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    
+    .feedback-alert {
+      animation: fadeInOut 2s forwards;
+    }
+    
+    /* Styles pour la synthèse */
+    .synthesis-content {
+      line-height: 1.6;
+    }
+    
+    .synthesis-content p {
+      margin-bottom: 1rem;
+    }
+    
+    .synthesis-content ul {
+      padding-left: 20px;
+      margin-bottom: 1rem;
+    }
+    
+    .synthesis-content li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .synonyms-antonyms {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
+    }
+    
+    .synonyms, .antonyms {
+      margin-bottom: 0.5rem;
+    }
+    
+    .synonyms strong, .antonyms strong {
+      color: #3f51b5;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="navigation-buttons position-fixed top-0 end-0 p-2">
+    {% if prev_id %}
+      <a href="{{ url_for('vocab_esp.word_detail', id=prev_id) }}" class="btn btn-sm btn-outline-secondary me-1">
+        <i class="fas fa-chevron-left"></i>
+      </a>
+    {% endif %}
+    {% if next_id %}
+      <a href="{{ url_for('vocab_esp.word_detail', id=next_id) }}" class="btn btn-sm btn-outline-secondary">
+        <i class="fas fa-chevron-right"></i>
+      </a>
+    {% endif %}
+  </div>
+
+  
+  <div class="container mt-4">
+    <h1 class="mb-4">{{ word.word }}</h1>
+    
+    <!-- Section image -->
+    <div class="mb-4">
+      {% if word.image %}
+        {% if word.image.startswith('data:') or word.image.startswith('http') %}
+          <img src="{{ word.image }}" alt="Image de {{ word.word }}" class="img-fluid rounded word-image">
+        {% else %}
+          <div class="alert alert-info">Format d'image non reconnu</div>
+        {% endif %}
+      {% else %}
+        <div class="text-muted fst-italic">Aucune image disponible</div>
+      {% endif %}
+    </div>
+    
+    <div class="mb-4">
+      <h4>Synthèse</h4>
+      <div class="synthesis-content" id="synthesisContent">{{ word.synthese|safe }}</div>
+    </div>
+    
+    <div class="mb-4">
+      <h4>Youglish</h4>
+      <p>
+        <a href="{{ word.youglish }}" target="_blank" class="btn btn-outline-primary">
+          <i class="fas fa-globe"></i> Voir sur Youglish
+        </a>
+      </p>
+    </div>
+    
+    <div class="mb-4">
+      <h4>Tags</h4>
+      <p>{{ word.tags }}</p>
+    </div>
+    
+    <div class="mb-4">
+      <h4>Note</h4>
+      <div class="star-rating" id="note-rating" data-id="{{ word.id }}">
+        {% set note = word.note or 0 %}
+        {% for i in range(1, 5) %}
+          <span class="star{% if i <= note %} selected{% endif %}" data-value="{{ i }}">★</span>
+        {% endfor %}
+      </div>
+    </div>
+    
+    <!-- Bouton pour la lecture audio -->
+    <div class="mb-4">
+      <button class="btn btn-outline-primary" onclick="playAudio('{{ word.word }}')">
+        <i class="fas fa-volume-up me-2"></i>Écouter
+      </button>
+    </div>
+    
+    <a href="/espagnol/" class="btn btn-primary"><i class="fas fa-arrow-left"></i> Retour à l'accueil</a>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Définir les URL de navigation prégénérées pour éviter les erreurs de rendu
+    {% if prev_id %}
+    const prevPageUrl = "{{ url_for('vocab_esp.word_detail', id=prev_id) }}";
+    {% else %}
+    const prevPageUrl = null;
+    {% endif %}
+    
+    {% if next_id %}
+    const nextPageUrl = "{{ url_for('vocab_esp.word_detail', id=next_id) }}";
+    {% else %}
+    const nextPageUrl = null;
+    {% endif %}
+    
+    // Navigation tactile
+    let startX;
+    document.body.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX);
+    document.body.addEventListener('touchend', e => {
+      const diff = e.changedTouches[0].screenX - startX;
+      if (diff > 100 && prevPageUrl) {
+        window.location.href = prevPageUrl;
+      }
+      if (diff < -100 && nextPageUrl) {
+        window.location.href = nextPageUrl;
+      }
+    });
+    
+    // Fonction pour jouer l'audio du mot
+    function playAudio(word) {
+      const url = 'https://translate.google.com/translate_tts?ie=UTF-8&q=' 
+                + encodeURIComponent(word) 
+                + '&tl=es&client=tw-ob';
+      const audio = new Audio(url);
+      audio.play();
+    }
+    
+    // Chargement initial
+    document.addEventListener('DOMContentLoaded', function() {
+      // Gestion des étoiles pour la notation
+      const starContainer = document.getElementById('note-rating');
+      if(starContainer) {
+        starContainer.querySelectorAll('.star').forEach(function(starElem) {
+          starElem.addEventListener('click', function() {
+            const ratingValue = parseInt(starElem.getAttribute('data-value'));
+            const wordId = starContainer.getAttribute('data-id');
+
+            starContainer.querySelectorAll('.star').forEach(function(s) {
+              if (parseInt(s.getAttribute('data-value')) <= ratingValue) {
+                s.classList.add('selected');
+              } else {
+                s.classList.remove('selected');
+              }
+            });
+
+            fetch('/espagnol/update_note', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: wordId, note: ratingValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.status !== 'success') {
+                console.error('Erreur lors de la mise à jour de la note');
+                alert('Erreur lors de la mise à jour de la note');
+              } else {
+                // Ajouter un retour visuel pour l'utilisateur
+                const feedback = document.createElement('div');
+                feedback.className = 'alert alert-success mt-2 feedback-alert';
+                feedback.textContent = 'Note mise à jour !';
+                starContainer.parentNode.appendChild(feedback);
+                
+                // Disparaître après 2 secondes
+                setTimeout(() => {
+                  feedback.remove();
+                }, 2000);
+              }
+            })
+            .catch(error => {
+              console.error('Erreur:', error);
+              alert('Erreur lors de la mise à jour de la note');
+            });
+          });
+        });
+      }
+    });
+  </script>
+  
+</body>
+</html>

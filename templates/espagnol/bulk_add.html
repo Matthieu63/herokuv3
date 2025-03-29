@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ajouter plusieurs mots</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Quill CSS -->
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts - Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+  
+  <style>
+    :root {
+      --primary-color: #3f51b5;
+      --secondary-color: #ff4081;
+      --text-color: #333;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      --border-radius: 8px;
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+    
+    .container-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 15px;
+    }
+    
+    .card-custom {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      margin-bottom: 20px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .card-header-custom {
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      background-color: rgba(63, 81, 181, 0.05);
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+    
+    .card-body-custom {
+      padding: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-control {
+      width: 100%; 
+      padding: 10px; 
+      border: 1px solid #ccc; 
+      border-radius: 4px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(63, 81, 181, 0.25);
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #303f9f;
+      transform: translateY(-2px);
+    }
+    
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+    
+    .btn-warning {
+      background-color: #ffc107;
+      color: black;
+    }
+    
+    .btn-success {
+      background-color: #28a745;
+      color: white;
+    }
+    
+    .btn:hover {
+      opacity: 0.9;
+    }
+    
+    .result-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 10px 0;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .result-list li {
+      padding: 10px 12px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .success-text {
+      color: #28a745;
+    }
+    
+    .danger-text {
+      color: #dc3545;
+    }
+    
+    .footer-custom {
+      background-color: #f1f1f1;
+      padding: 20px 0;
+      margin-top: 50px;
+      text-align: center;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar unifiée -->
+ <!-- Version corrigée de la barre de navigation pour tous les templates -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">
+      <i class="fas fa-language"></i> Apprendre l'Espagnol
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/"><i class="fas fa-book"></i> Vocabulaire</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/flashcard"><i class="fas fa-clone"></i> Flash Cards</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/dialogues"><i class="fas fa-comments"></i> Dialogues</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/stories"><i class="fas fa-book-open"></i> Histoires</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  <div class="container container-main">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1><i class="fas fa-plus-circle me-2"></i>Ajouter plusieurs mots</h1>
+      <a href="/" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-2"></i>Retour à la liste des mots
+      </a>
+    </div>
+
+    <div class="card card-custom">
+      <div class="card-header-custom">
+        <h4 class="mb-0">Formulaire d'ajout en masse</h4>
+        <p class="text-muted mb-0">Ajoutez plusieurs mots en espagnol en une seule fois</p>
+      </div>
+      <div class="card-body-custom">
+        <form id="bulk-add-form" method="POST" action="{{ url_for('vocab_esp.bulk_add') }}">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="form-group">
+                <label for="words_text" class="form-label">Entrez un mot par ligne :</label>
+                <textarea id="words_text" name="words_text" rows="12" class="form-control" required placeholder="Exemple:
+casa
+perro
+gato
+libro"></textarea>
+              </div>
+            </div>
+            
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="tags_bulk" class="form-label">Tags (sélectionnez un ou plusieurs) :</label>
+                <select id="tags_bulk" name="tags_bulk" multiple class="form-control" style="height: 150px;">
+                  {% for tag in available_tags %}
+                    <option value="{{ tag }}">{{ tag }}</option>
+                  {% endfor %}
+                </select>
+                <small class="text-muted">Maintenez Ctrl (ou Cmd) pour sélectionner plusieurs tags</small>
+              </div>
+              
+              <div class="form-check mb-2 mt-3">
+                <input type="checkbox" id="disable_auto_synthese" name="disable_auto_synthese" class="form-check-input">
+                <label class="form-check-label" for="disable_auto_synthese">
+                  Ne pas générer automatiquement la synthèse
+                </label>
+              </div>
+              
+              <div class="form-check mb-2">
+                <input type="checkbox" id="disable_auto_image" name="disable_auto_image" class="form-check-input">
+                <label class="form-check-label" for="disable_auto_image">
+                  Ne pas générer automatiquement l'image
+                </label>
+              </div>
+              
+              <div class="form-check mb-3">
+                <input type="checkbox" id="skip_duplicates" name="skip_duplicates" checked class="form-check-input">
+                <label class="form-check-label" for="skip_duplicates">
+                  Ignorer automatiquement les mots déjà existants
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-between mt-3">
+            <button type="button" id="check-duplicates-btn" class="btn btn-primary">
+              <i class="fas fa-search me-2"></i>Vérifier les doublons
+            </button>
+            
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-save me-2"></i>Ajouter les mots
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Container pour afficher le résultat de la vérification des doublons -->
+    <div id="duplicates-result" style="display: none;" class="mt-4 card card-custom">
+      <div class="card-header-custom">
+        <h3 class="mb-0">Résultat de la vérification des doublons</h3>
+      </div>
+      <div class="card-body-custom">
+        <div class="row">
+          <div class="col-md-6">
+            <div id="new-words-container">
+              <h4 class="mb-3">
+                <i class="fas fa-check-circle text-success me-2"></i>
+                Nouveaux mots à ajouter (<span id="new-words-count" class="badge bg-success">0</span>)
+              </h4>
+              <ul id="new-words-list" class="result-list"></ul>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <div id="duplicate-words-container">
+              <h4 class="mb-3">
+                <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                Mots déjà existants (<span id="duplicate-words-count" class="badge bg-warning text-dark">0</span>)
+              </h4>
+              <ul id="duplicate-words-list" class="result-list"></ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" id="add-new-words-btn" class="btn btn-success me-2">
+            <i class="fas fa-check me-2"></i>Ajouter seulement les nouveaux mots
+          </button>
+          <button type="button" id="add-all-words-btn" class="btn btn-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i>Ajouter tous les mots (y compris les doublons)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer unifié -->
+  <footer class="footer-custom mt-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 text-md-start text-center mb-3 mb-md-0">
+          <h5>Navigation rapide</h5>
+          <div class="d-flex flex-column flex-md-row justify-content-md-start justify-content-center">
+            <a href="/" class="text-decoration-none me-md-3 text-secondary">Vocabulaire</a>
+            <a href="/espagnol/flashcard" class="text-decoration-none me-md-3 text-secondary">Flash Cards</a>
+            <a href="espagnol/dialogues" class="text-decoration-none me-md-3 text-secondary">Dialogues</a>
+            <a href="espagnol/stories" class="text-decoration-none text-secondary">Histoires</a>
+          </div>
+        </div>
+        <div class="col-md-6 text-md-end text-center">
+          <p class="mb-0">© 2025 Apprendre l'Espagnol - Tous droits réservés</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const bulkAddForm = document.getElementById('bulk-add-form');
+    const wordsTextarea = document.getElementById('words_text');
+    const checkDuplicatesBtn = document.getElementById('check-duplicates-btn');
+    const duplicatesResult = document.getElementById('duplicates-result');
+    const newWordsList = document.getElementById('new-words-list');
+    const duplicateWordsList = document.getElementById('duplicate-words-list');
+    const newWordsCount = document.getElementById('new-words-count');
+    const duplicateWordsCount = document.getElementById('duplicate-words-count');
+    const addNewWordsBtn = document.getElementById('add-new-words-btn');
+    const addAllWordsBtn = document.getElementById('add-all-words-btn');
+    const skipDuplicatesCheckbox = document.getElementById('skip_duplicates');
+    
+    let newWords = [];
+    let duplicateWords = [];
+    
+    // Vérification des doublons
+    checkDuplicatesBtn.addEventListener('click', function() {
+      const wordsText = wordsTextarea.value.trim();
+      if (!wordsText) {
+        alert('Veuillez entrer au moins un mot');
+        return;
+      }
+      
+      const wordsList = wordsText.split('\n')
+        .map(w => w.trim())
+        .filter(w => w);
+        
+      if (wordsList.length === 0) {
+        alert('Aucun mot valide trouvé');
+        return;
+      }
+      
+      // Indiquer que la vérification est en cours
+      checkDuplicatesBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Vérification en cours...';
+      checkDuplicatesBtn.disabled = true;
+      
+      // Vérifier les doublons en masse
+      fetch("{{ url_for('vocab_esp.check_duplicates_bulk') }}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ words: wordsList })
+      })
+      .then(response => response.json())
+      .then(result => {
+        // Réinitialiser les listes
+        newWords = result.new_words || [];
+        duplicateWords = result.duplicates || [];
+        
+        // Remplir la liste des nouveaux mots
+        newWordsList.innerHTML = '';
+        newWords.forEach(word => {
+          const li = document.createElement('li');
+          li.textContent = word;
+          li.className = 'success-text';
+          newWordsList.appendChild(li);
+        });
+        
+        // Remplir la liste des doublons
+        duplicateWordsList.innerHTML = '';
+        duplicateWords.forEach(item => {
+          const li = document.createElement('li');
+          li.className = 'd-flex justify-content-between align-items-center';
+          
+          const wordText = document.createElement('span');
+          wordText.textContent = item.word;
+          wordText.className = 'danger-text';
+          
+          const detailsBtn = document.createElement('button');
+          detailsBtn.textContent = 'Voir détails';
+          detailsBtn.className = 'btn btn-sm btn-outline-secondary';
+          
+          detailsBtn.addEventListener('click', function() {
+            // Afficher la modal de détails du mot existant
+            showWordDetailsModal(item.existing);
+          });
+          
+          li.appendChild(wordText);
+          li.appendChild(detailsBtn);
+          duplicateWordsList.appendChild(li);
+        });
+        
+        // Mettre à jour les compteurs
+        newWordsCount.textContent = newWords.length;
+        duplicateWordsCount.textContent = duplicateWords.length;
+        
+        // Afficher le résultat
+        duplicatesResult.style.display = 'block';
+        
+        // Faire défiler jusqu'aux résultats
+        duplicatesResult.scrollIntoView({ behavior: 'smooth' });
+        
+        // Réinitialiser le bouton
+        checkDuplicatesBtn.innerHTML = '<i class="fas fa-search me-2"></i>Vérifier les doublons';
+        checkDuplicatesBtn.disabled = false;
+      })
+      .catch(error => {
+        console.error('Error checking duplicates:', error);
+        alert('Erreur lors de la vérification des doublons');
+        checkDuplicatesBtn.innerHTML = '<i class="fas fa-search me-2"></i>Vérifier les doublons';
+        checkDuplicatesBtn.disabled = false;
+      });
+    });
+    
+    // Ajouter seulement les nouveaux mots
+    addNewWordsBtn.addEventListener('click', function() {
+      if (newWords.length === 0) {
+        alert('Aucun nouveau mot à ajouter');
+        return;
+      }
+      
+      // Mettre à jour le textarea avec seulement les nouveaux mots
+      wordsTextarea.value = newWords.join('\n');
+      
+      // Désactiver l'option "Ignorer les doublons" puisqu'on a déjà filtré
+      skipDuplicatesCheckbox.checked = false;
+      
+      // Soumettre le formulaire
+      bulkAddForm.submit();
+    });
+    
+    // Ajouter tous les mots (y compris les doublons)
+    addAllWordsBtn.addEventListener('click', function() {
+      // Reconstruire la liste complète des mots
+      const allWords = [...newWords];
+      duplicateWords.forEach(item => {
+        allWords.push(item.word);
+      });
+      
+      // Mettre à jour le textarea
+      wordsTextarea.value = allWords.join('\n');
+      
+      // Désactiver l'option "Ignorer les doublons"
+      skipDuplicatesCheckbox.checked = false;
+      
+      // Soumettre le formulaire
+      bulkAddForm.submit();
+    });
+  });
+
+  function showWordDetailsModal(wordData) {
+    // Créer une modal temporaire pour afficher les détails du mot
+    const modalHTML = `
+      <div id="wordDetailsModal" class="modal fade show" style="display: block; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Détails du mot "${wordData.word}"</h5>
+              <button type="button" class="btn-close" onclick="document.getElementById('wordDetailsModal').remove();"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <p class="fw-bold mb-1">Synthèse:</p>
+                <div class="p-3 bg-light rounded">${wordData.synthese || 'Aucune synthèse disponible'}</div>
+              </div>
+              
+              <p class="fw-bold mb-1">Tags:</p>
+              <p>${wordData.tags || 'Aucun tag'}</p>
+              
+              ${wordData.image ? `
+                <p class="fw-bold mb-1">Image:</p>
+                <div class="text-center">
+                  <img src="${wordData.image}" alt="Image de ${wordData.word}" class="img-fluid rounded" style="max-height: 200px;">
+                </div>
+              ` : ''}
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('wordDetailsModal').remove();">Fermer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+  }
+  </script>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Script principal -->
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="{{ url_for('static', filename='progress.js') }}"></script>
+
+</body>
+</html>

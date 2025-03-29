@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tableau de bord</title>
+    
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body class="bg-white">
+<div class="container py-5">
+    <h2 class="mb-4">Bienvenue {{ session['user'] }}</h2>
+    <div class="card p-4 shadow-sm mb-4">
+        <h4>Droits d'accès</h4>
+        <p><strong>Langues :</strong> {{ user.access.languages }}</p>
+        <p><strong>Modules :</strong> {{ user.access.modules }}</p>
+    </div>
+    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Se déconnecter</a>
+</div>
+</body>
+</html>

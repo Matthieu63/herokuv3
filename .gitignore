@@ -1,0 +1,17 @@
+# Exclure les environnements virtuels
+.venv/
+env/
+venv/
+espagnol/.venv/
+
+# Exclure les fichiers Python compilés
+__pycache__/
+*.pyc
+
+# Mac / Windows / IDE divers
+.DS_Store
+*.swp
+*.swo
+*.log
+.idea/
+.vscode/

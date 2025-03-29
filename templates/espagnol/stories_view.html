@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histoire en Espagnol</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Navbar unifiée à ajouter en haut de chaque page -->
+<!-- Version corrigée de la barre de navigation pour tous les templates -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">
+      <i class="fas fa-language"></i> Apprendre l'Espagnol
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/"><i class="fas fa-book"></i> Vocabulaire</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/flashcard"><i class="fas fa-clone"></i> Flash Cards</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/dialogues"><i class="fas fa-comments"></i> Dialogues</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/stories"><i class="fas fa-book-open"></i> Histoires</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <style>
+        .story-header {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .dialogue-card {
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .dialogue-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .dialogue-person-a {
+            background-color: #e9f2ff;
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .dialogue-person-b {
+            background-color: #f5f8ff;
+            padding: 15px;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #e9ecef;
+            padding: 3px 8px;
+            margin: 2px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        .star {
+            color: #ffc107;
+        }
+        .active-row {
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="story-header">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1>🇪🇸 {{ story.title }}</h1>
+                <a href="{{ url_for('stories_esp.index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+            </div>
+            
+            <!-- Informations sur l'histoire -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <!-- Étoiles basées sur la note -->
+                    <div class="mb-2">
+                        {% if story.rating %}
+                            {% for i in range(story.rating) %}
+                                <span class="star">★</span>
+                            {% endfor %}
+                        {% else %}
+                            <small class="text-muted">Pas de note</small>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Date de création -->
+                    <p class="text-muted mb-2">
+                        <i class="far fa-calendar-alt me-1"></i>
+                        {{ story.creation_date.split('T')[0] if 'T' in story.creation_date else story.creation_date.split(' ')[0] }}
+                    </p>
+                    
+                    <!-- Thème si disponible -->
+                    {% if story.theme %}
+                        <p class="mb-3"><small>Thème: {{ story.theme }}</small></p>
+                    {% endif %}
+                </div>
+                <div class="col-md-6">
+                    <!-- Tags -->
+                    <div class="mb-3">
+                        {% if story.tags %}
+                            {% for tag in story.tags.split(',') %}
+                                <span class="tag">{{ tag.strip() }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <small class="text-muted">Pas de tags</small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Configuration des voix -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Configuration de la synthèse vocale (Amazon Polly)</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="voice-a" class="form-label">Voix pour Personne A:</label>
+                        <select id="voice-a" class="form-select"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="voice-b" class="form-label">Voix pour Personne B:</label>
+                        <select id="voice-b" class="form-select"></select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contrôles audio -->
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div id="audio-controls" class="mb-3 text-center">
+                    <button id="play-all" class="btn btn-success me-2">
+                        <i class="fas fa-play"></i> Lire tous les dialogues
+                    </button>
+                    <button id="stop-all" class="btn btn-danger" disabled>
+                        <i class="fas fa-stop"></i> Arrêter
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des dialogues -->
+        <div id="dialogues-container">
+            {% if dialogues %}
+                {% for dialogue in dialogues %}
+                    <div class="card dialogue-card dialogue-row" data-dialogue-id="{{ dialogue.id }}">
+                        <div class="dialogue-person-a">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="text-wrap flex-grow-1">
+                                    <strong>Personne A:</strong> {{ dialogue.personne_a }}
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm ms-2 speak-btn" 
+                                        data-person="a" 
+                                        data-text="{{ dialogue.personne_a }}">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="dialogue-person-b">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="text-wrap flex-grow-1">
+                                    <strong>Personne B:</strong> {{ dialogue.personne_b }}
+                                </div>
+                                <button class="btn btn-outline-primary btn-sm ms-2 speak-btn" 
+                                        data-person="b" 
+                                        data-text="{{ dialogue.personne_b }}">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">Aucun dialogue trouvé pour cette histoire.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+        <div id="toast-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Récupération des éléments DOM
+            const voiceASelect = document.getElementById('voice-a');
+            const voiceBSelect = document.getElementById('voice-b');
+            const playAllBtn = document.getElementById('play-all');
+            const stopAllBtn = document.getElementById('stop-all');
+            const speakButtons = document.querySelectorAll('.speak-btn');
+            const toastContainer = document.getElementById('toast-container');
+            const dialogueRows = document.querySelectorAll('.dialogue-row');
+            
+            // Variables pour la lecture
+            let currentAudio = null;
+            let isPlaying = false;
+            let playQueue = [];
+            let playQueueIndex = 0;
+            let activeButton = null;
+            
+            // Délai avant sauvegarde automatique (en ms)
+            const saveDelay = 1000;
+            
+            // Fonction pour sauvegarder les préférences de voix
+            let saveTimeout = null;
+            
+            async function saveVoiceSettings() {
+                try {
+                    const response = await fetch('/espagnol/api/voice-settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            voice_a: voiceASelect.value,
+                            voice_b: voiceBSelect.value
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        console.log('Préférences de voix sauvegardées');
+                    } else {
+                        console.error('Erreur lors de la sauvegarde des préférences');
+                    }
+                } catch (error) {
+                    console.error('Erreur lors de la sauvegarde des préférences:', error);
+                }
+            }
+            
+            // Fonction pour programmer une sauvegarde différée
+            function scheduleSave() {
+                // Annuler tout délai précédent
+                if (saveTimeout) {
+                    clearTimeout(saveTimeout);
+                }
+                
+                // Programmer une nouvelle sauvegarde
+                saveTimeout = setTimeout(saveVoiceSettings, saveDelay);
+            }
+            
+            // Récupérer les préférences sauvegardées
+            let savedSettings = null;
+            try {
+                const response = await fetch('/espagnol/api/voice-settings');
+                if (response.ok) {
+                    savedSettings = await response.json();
+                    console.log('Préférences de voix récupérées:', savedSettings);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des préférences:', error);
+            }
+            
+            // Chargement des voix disponibles
+            try {
+                const response = await fetch('/espagnol/api/polly/voices?language=es-ES');
+                if (!response.ok) throw new Error('Erreur lors du chargement des voix');
+                
+                const voices = await response.json();
+                
+                // Remplir les sélecteurs de voix
+                voices.forEach(voice => {
+                    const optionA = document.createElement('option');
+                    optionA.value = voice.id;
+                    optionA.textContent = `${voice.name} (${voice.gender})`;
+                    voiceASelect.appendChild(optionA);
+                    
+                    const optionB = document.createElement('option');
+                    optionB.value = voice.id;
+                    optionB.textContent = `${voice.name} (${voice.gender})`;
+                    voiceBSelect.appendChild(optionB);
+                });
+                
+                // Utiliser les préférences sauvegardées ou les valeurs par défaut
+                if (savedSettings) {
+                    voiceASelect.value = savedSettings.voice_a;
+                    voiceBSelect.value = savedSettings.voice_b;
+                } else {
+                    // Sélectionner une voix masculine pour A et féminine pour B par défaut
+                    const maleVoice = voices.find(v => v.gender === 'Male')?.id || voices[0]?.id;
+                    const femaleVoice = voices.find(v => v.gender === 'Female')?.id || voices[0]?.id;
+                    
+                    if (maleVoice) voiceASelect.value = maleVoice;
+                    if (femaleVoice) voiceBSelect.value = femaleVoice;
+                }
+                
+            } catch (error) {
+                console.error('Erreur lors du chargement des voix:', error);
+                showToast('Erreur lors du chargement des voix. Utilisation des voix par défaut.', 'danger');
+                
+                // Ajouter des options par défaut
+                const defaultVoices = [
+                    { id: 'Enrique', name: 'Enrique (Male)' },
+                    { id: 'Lucia', name: 'Lucia (Female)' }
+                ];
+                
+                defaultVoices.forEach(voice => {
+                    const optionA = document.createElement('option');
+                    optionA.value = voice.id;
+                    optionA.textContent = voice.name;
+                    voiceASelect.appendChild(optionA);
+                    
+                    const optionB = document.createElement('option');
+                    optionB.value = voice.id;
+                    optionB.textContent = voice.name;
+                    voiceBSelect.appendChild(optionB);
+                });
+                
+                // Utiliser les préférences sauvegardées ou les valeurs par défaut
+                if (savedSettings) {
+                    voiceASelect.value = savedSettings.voice_a;
+                    voiceBSelect.value = savedSettings.voice_b;
+                } else {
+                    voiceASelect.value = 'Enrique';
+                    voiceBSelect.value = 'Lucia';
+                }
+            }
+            
+            // Ajouter des écouteurs pour les changements de voix
+            voiceASelect.addEventListener('change', scheduleSave);
+            voiceBSelect.addEventListener('change', scheduleSave);
+            
+            // Fonction pour la synthèse vocale
+            async function speak(text, voiceId, dialogueRow = null) {
+                try {
+                    // Annuler tout audio en cours
+                    if (currentAudio) {
+                        const oldAudio = currentAudio;
+                        currentAudio = null;
+                        
+                        oldAudio.onended = null;
+                        oldAudio.onerror = null;
+                        oldAudio.pause();
+                    }
+                    
+                    console.log(`Synthèse vocale pour: "${text.substring(0, 30)}..." avec voix: ${voiceId}`);
+                    
+                    // Mettre en surbrillance la ligne de dialogue en cours
+                    if (dialogueRow) {
+                        // Supprimer la mise en évidence de tous les dialogues
+                        dialogueRows.forEach(row => row.classList.remove('active-row'));
+                        // Mettre en évidence le dialogue en cours
+                        dialogueRow.classList.add('active-row');
+                        // Faire défiler jusqu'au dialogue
+                        dialogueRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    
+                    const response = await fetch('/espagnol/api/polly', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            text: text, 
+                            voice: voiceId,
+                            language: 'es-ES'
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Erreur HTTP: ${response.status}`);
+                    }
+                    
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    currentAudio = new Audio(audioUrl);
+                    
+                    // Créer une promesse pour attendre la fin de l'audio
+                    return new Promise((resolve) => {
+                        // Gérer la fin de lecture normale
+                        currentAudio.onended = () => {
+                            console.log("Audio terminé naturellement");
+                            if (isPlaying && playQueue.length > 0 && playQueueIndex < playQueue.length) {
+                                playNextInQueue();
+                                resolve(true);
+                            } else {
+                                if (isPlaying) {
+                                    console.log("Fin de la file d'attente");
+                                    stopPlayback();
+                                }
+                                resolve(true);
+                            }
+                        };
+                        
+                        // Gérer les erreurs
+                        currentAudio.onerror = (e) => {
+                            console.error('Erreur de lecture audio:', e);
+                            showToast('Erreur de lecture audio', 'danger');
+                            if (isPlaying) stopPlayback();
+                            resolve(false);
+                        };
+                        
+                        // Lancer la lecture
+                        currentAudio.play().catch(error => {
+                            console.error("Erreur au lancement de l'audio:", error);
+                            showToast('Erreur au lancement de l\'audio', 'danger');
+                            resolve(false);
+                        });
+                    });
+                    
+                } catch (error) {
+                    console.error('Erreur lors de la synthèse vocale:', error);
+                    showToast('Erreur lors de la synthèse vocale', 'danger');
+                    return false;
+                }
+            }
+            
+            // Fonction pour afficher des notifications toast
+            function showToast(message, type = 'info') {
+                const toastEl = document.createElement('div');
+                toastEl.className = `toast align-items-center text-white bg-${type} border-0`;
+                toastEl.setAttribute('role', 'alert');
+                toastEl.setAttribute('aria-live', 'assertive');
+                toastEl.setAttribute('aria-atomic', 'true');
+                
+                toastEl.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                toastContainer.appendChild(toastEl);
+                
+                const toast = new bootstrap.Toast(toastEl, { autohide: true, delay: 5000 });
+                toast.show();
+                
+                toastEl.addEventListener('hidden.bs.toast', () => {
+                    toastContainer.removeChild(toastEl);
+                });
+            }
+            
+            // Fonction pour jouer le dialogue complet
+            function buildPlayQueue() {
+                const dialogueRows = document.querySelectorAll('.dialogue-row');
+                playQueue = [];
+                
+                dialogueRows.forEach(row => {
+                    const personAButton = row.querySelector('[data-person="a"]');
+                    const personBButton = row.querySelector('[data-person="b"]');
+                    
+                    playQueue.push({
+                        text: personAButton.dataset.text,
+                        voiceId: voiceASelect.value,
+                        dialogueRow: row
+                    });
+                    
+                    playQueue.push({
+                        text: personBButton.dataset.text,
+                        voiceId: voiceBSelect.value,
+                        dialogueRow: row
+                    });
+                });
+                
+                return playQueue;
+            }
+            
+            // Fonction pour jouer l'élément suivant dans la file
+            async function playNextInQueue() {
+                if (playQueueIndex < playQueue.length) {
+                    const item = playQueue[playQueueIndex];
+                    playQueueIndex++;
+                    
+                    const success = await speak(item.text, item.voiceId, item.dialogueRow);
+                    if (!success && isPlaying) {
+                        playNextInQueue();
+                    }
+                } else {
+                    stopPlayback();
+                }
+            }
+            
+            // Fonction pour arrêter la lecture
+            function stopPlayback() {
+                console.log("Arrêt de la lecture...");
+                isPlaying = false;
+                
+                if (currentAudio) {
+                    // Supprimer tous les gestionnaires d'événements avant de mettre en pause
+                    const oldAudio = currentAudio;
+                    currentAudio = null;
+                    
+                    oldAudio.onended = null;
+                    oldAudio.onerror = null;
+                    oldAudio.pause();
+                    
+                    // Tenter de libérer les ressources
+                    try {
+                        oldAudio.src = '';
+                        oldAudio.load();
+                    } catch (e) {
+                        console.error("Erreur lors de la libération des ressources audio:", e);
+                    }
+                }
+                
+                // Réinitialiser l'état de lecture
+                playQueueIndex = 0;
+                playQueue = [];
+                
+                // Réinitialiser le bouton actif
+                if (activeButton) {
+                    activeButton.classList.remove('btn-primary');
+                    activeButton.classList.add('btn-outline-primary');
+                    activeButton = null;
+                }
+                
+                // Supprimer la mise en évidence de tous les dialogues
+                dialogueRows.forEach(row => row.classList.remove('active-row'));
+                
+                // Mettre à jour l'interface
+                playAllBtn.disabled = false;
+                stopAllBtn.disabled = true;
+                
+                console.log("Lecture arrêtée avec succès");
+            }
+            
+            // Événement pour jouer tous les dialogues
+            playAllBtn.addEventListener('click', function() {
+                console.log("Démarrage de la lecture complète...");
+                playQueue = buildPlayQueue();
+                playQueueIndex = 0;
+                isPlaying = true;
+                
+                playAllBtn.disabled = true;
+                stopAllBtn.disabled = false;
+                
+                playNextInQueue();
+            });
+            
+            // Événement pour arrêter la lecture
+            stopAllBtn.addEventListener('click', function() {
+                console.log("Bouton d'arrêt cliqué!");
+                stopPlayback();
+            });
+            
+            // Événements pour les boutons de lecture individuels
+            speakButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    // Arrêter la lecture en cours (y compris celle d'un bouton précédent)
+                    if (isPlaying) {
+                        stopPlayback();
+                    }
+                    
+                    const person = button.dataset.person;
+                    const text = button.dataset.text;
+                    const voiceId = person === 'a' ? voiceASelect.value : voiceBSelect.value;
+                    
+                    // Trouver la ligne de dialogue parente
+                    const dialogueRow = button.closest('.dialogue-row');
+                    
+                    // Activer le bouton d'arrêt
+                    isPlaying = true;
+                    stopAllBtn.disabled = false;
+                    
+                    // Garder une référence au bouton actif
+                    activeButton = button;
+                    
+                    // Mettre en surbrillance le bouton pendant la lecture
+                    button.classList.add('btn-primary');
+                    button.classList.remove('btn-outline-primary');
+                    
+                    const success = await speak(text, voiceId, dialogueRow);
+                    
+                    // Si la lecture a échoué ou s'est terminée naturellement
+                    if (!success || !isPlaying) {
+                        button.classList.remove('btn-primary');
+                        button.classList.add('btn-outline-primary');
+                        
+                        // Supprimer la mise en évidence de la ligne de dialogue
+                        dialogueRows.forEach(row => row.classList.remove('active-row'));
+                        
+                        // Si aucun autre audio n'est en cours de lecture
+                        if (!currentAudio || currentAudio.paused) {
+                            isPlaying = false;
+                            stopAllBtn.disabled = true;
+                            activeButton = null;
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

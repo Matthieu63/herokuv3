@@ -1,0 +1,26 @@
+from flask import Flask, render_template
+from vocab import vocab_bp
+from dialogues import dialogues_bp
+from stories import stories_bp  # Assurez-vous que ce fichier existe dans le même répertoire
+from playht import playht_bp
+from polly import polly_bp
+from dotenv import load_dotenv
+from voice_settings import voice_settings_bp
+
+app = Flask(__name__)
+app.secret_key = 'ta_clé_secrète'
+
+# Enregistrement des blueprints
+app.register_blueprint(vocab_bp)
+app.register_blueprint(dialogues_bp)
+app.register_blueprint(stories_bp)  # Assurez-vous que stories_bp est importé correctement
+app.register_blueprint(playht_bp)
+app.register_blueprint(polly_bp)
+app.register_blueprint(voice_settings_bp)
+
+@app.route("/")  # ✅ Ajout de cette route pour éviter l'erreur
+def index():
+    return render_template("index.html")  # ✅ Assure-toi que "index.html" existe bien
+
+if __name__ == "__main__":
+    app.run(debug=True)

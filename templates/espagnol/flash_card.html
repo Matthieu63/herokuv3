@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flash Card</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- CSS existant -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts - Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+  
+  <style>
+    :root {
+      --primary-color: #3f51b5;
+      --secondary-color: #ff4081;
+      --text-color: #333;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      --border-radius: 12px;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      padding-bottom: 60px;
+      position: relative;
+    }
+    
+    .container-main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 15px;
+    }
+    
+    .flash-card-container {
+      perspective: 1000px;
+      margin: 50px auto;
+      max-width: 800px;
+    }
+
+    .flash-card {
+      width: 100%;
+      height: auto;
+      min-height: 500px;
+      max-height: 90vh;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      margin: 0 auto;
+    }
+
+    .flash-card-front,
+    .flash-card-back {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      min-height: inherit;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 30px;
+      background-color: white;
+      border-radius: var(--border-radius);
+    }
+
+    .flash-card-front {
+      transform: rotateY(0deg);
+      z-index: 2;
+    }
+
+    .flash-card-back {
+      transform: rotateY(180deg);
+      overflow-y: auto;
+    }
+
+    .flash-card.flipped {
+      transform: rotateY(180deg);
+    }
+    
+    .flash-card-word {
+      font-size: 2.5rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--primary-color);
+    }
+    
+    .flash-image {
+      max-height: 450px;
+      max-width: 100%;
+      margin: 20px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .flash-image img {
+      max-height: 400px;
+      max-width: 100%;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+    
+    .flash-card-controls {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .btn-flash-card {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-flash-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .flash-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    .star-rating {
+      display: flex;
+      gap: 5px;
+    }
+    
+    .star-rating .star {
+      font-size: 28px;
+      cursor: pointer;
+      color: #d4d4d4;
+      transition: all 0.2s;
+    }
+    
+    .star-rating .star.selected {
+      color: #ffc107;
+    }
+    
+    .card-navigation {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 15px;
+      background-color: white;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      z-index: 100;
+    }
+    
+    .card-nav-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      background-color: white;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .card-nav-btn:hover {
+      background-color: var(--primary-color);
+      color: white;
+      transform: translateY(-3px);
+    }
+    
+    .flip-btn {
+      width: 60px;
+      height: 60px;
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+    }
+    
+    .flip-btn:hover {
+      background-color: #e91e63;
+    }
+    
+    .back-to-index {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 14px;
+      z-index: 1001;
+      transition: all 0.3s;
+    }
+    
+    .back-to-index:hover {
+      background-color: #303f9f;
+      color: white;
+      transform: translateY(-2px);
+    }
+    
+    .flash-section {
+      width: 100%;
+      text-align: left;
+      margin-bottom: 20px;
+    }
+    
+    .flash-section h4 {
+      color: var(--primary-color);
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 5px;
+    }
+    
+    .key-controls {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 8px 15px;
+      border-radius: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 0.9rem;
+      color: #666;
+    }
+    
+    .key-control {
+      display: inline-block;
+      margin: 0 5px;
+      padding: 2px 8px;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+      .flash-card {
+        height: 450px;
+      }
+      
+      .flash-card-word {
+        font-size: 2rem;
+      }
+      
+      .flash-image {
+        max-height: 200px;
+      }
+      
+      .back-to-index {
+        top: 10px;
+        left: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/espagnol/">
+        <i class="fas fa-language"></i> Apprendre l'Espagnol
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/"><i class="fas fa-book"></i> Vocabulaire</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/flashcard"><i class="fas fa-clone"></i> Flash Cards</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/dialogues"><i class="fas fa-comments"></i> Dialogues</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/stories"><i class="fas fa-book-open"></i> Histoires</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container container-main">
+    {% if end %}
+      <div class="alert alert-success text-center p-5 mt-5">
+        <h3><i class="fas fa-check-circle me-2"></i>C'est la fin des cartes !</h3>
+        <p class="lead mb-4">Vous avez parcouru toutes les cartes dans cette sélection.</p>
+        <a href="/espagnol/flashcard?tag={{ tag_filter }}&rating={{ rating_filter }}&index=0" class="btn btn-lg btn-success">
+          <i class="fas fa-redo me-2"></i>Recommencer
+        </a>
+        <a href="/espagnol/" class="btn btn-lg btn-outline-primary ms-3">
+          <i class="fas fa-home me-2"></i>Retour à l'accueil
+        </a>
+      </div>
+    {% elif word %}
+      <div class="flash-card-container">
+        <div class="flash-card" id="flashCard">
+          <!-- Face avant de la carte -->
+          <div class="flash-card-front">
+            <div class="flash-card-word">{{ word.word }}</div>
+            {% if word.image %}
+            <div class="flash-image mb-3">
+              <img src="{{ word.image }}" alt="Image de {{ word.word }}" class="img-fluid">
+            </div>
+            {% endif %}
+            <button class="btn-flash-card" onclick="playAudio('{{ word.word }}')">
+              <i class="fas fa-volume-up me-2"></i>Écouter
+            </button>
+            <div class="flash-card-footer">
+              <div>
+                <small class="text-muted">Tags : {{ word.tags }}</small>
+              </div>
+              <!-- Le lien Youglish a été supprimé du recto -->
+            </div>
+            <div class="mt-3 text-center">
+              <p class="text-muted"><i class="fas fa-sync-alt me-2"></i>Cliquez sur la carte ou appuyez sur Entrée pour révéler le contenu</p>
+            </div>
+          </div>
+          
+          <!-- Face arrière de la carte -->
+          <div class="flash-card-back">
+            <h3 class="flash-card-word mb-4">{{ word.word }}</h3>
+            
+            <div class="flash-section">
+              <h4><i class="fas fa-book me-2"></i>Synthèse</h4>
+              <div>{{ word.synthese|safe }}</div>
+            </div>
+            
+            <div class="flash-section">
+              <h4><i class="fas fa-exchange-alt me-2"></i>Synonymes</h4>
+              <div>{{ word.synonymes|safe }}</div>
+            </div>
+            
+            <!-- Lien Youglish déplacé vers le verso -->
+            <div class="flash-section">
+              <a href="{{ word.youglish }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-external-link-alt me-1"></i>Youglish
+              </a>
+            </div>
+            
+            <!-- Lien Spanish Addict affiché pour les verbes -->
+            {% set infinitive = word.word|lower %}
+            {% if infinitive.endswith('ar') or infinitive.endswith('er') or infinitive.endswith('ir') %}
+            <div class="flash-section">
+              <a href="https://www.spanish-addict.com/conjugate/{{ word.word|urlencode }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-external-link-alt me-1"></i>Spanish Addict
+              </a>
+            </div>
+            {% endif %}
+            
+            <div class="flash-section">
+              <h4><i class="fas fa-star me-2"></i>Note</h4>
+              <div class="star-rating" id="note-rating" data-id="{{ word.id }}">
+                {% set note = word.note or 0 %}
+                {% for i in range(1, 6) %}
+                  <span class="star{% if i <= note %} selected{% endif %}" data-value="{{ i }}">★</span>
+                {% endfor %}
+              </div>
+            </div>
+            
+            <button class="btn-flash-card mt-3" onclick="playAudio('{{ word.word }}')">
+              <i class="fas fa-volume-up me-2"></i>Écouter
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contrôles de navigation des cartes -->
+      <div class="card-navigation">
+        <button class="card-nav-btn prev-btn" onclick="navigateCards('prev')" title="Carte précédente">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="card-nav-btn flip-btn" onclick="flipCard()" title="Retourner la carte">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+        <button class="card-nav-btn next-btn" onclick="navigateCards('next')" title="Carte suivante">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+      
+      <div class="key-controls">
+        <span class="me-2">Raccourcis :</span>
+        <span class="key-control">←</span> Carte précédente
+        <span class="key-control">→</span> Carte suivante
+        <span class="key-control">Entrée</span> Retourner la carte
+      </div>
+    {% else %}
+      <div class="alert alert-warning text-center p-5 mt-5">
+        <h3><i class="fas fa-exclamation-triangle me-2"></i>Aucun mot trouvé</h3>
+        <p class="lead mb-4">Aucun mot ne correspond aux critères sélectionnés.</p>
+        <a href="/espagnol/" class="btn btn-lg btn-primary">
+          <i class="fas fa-home me-2"></i>Retour à l'accueil
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    // Code pour ajouter le swipe sur mobile et corriger la lecture audio
+
+// 1. Fonction pour détecter et gérer les événements de swipe
+function handleTouchSwipe() {
+  const flashCard = document.getElementById('flashCard');
+  if (!flashCard) return;
+  
+  let startX, startY, endX, endY;
+  const minSwipeDistance = 50; // Distance minimale pour considérer un swipe valide
+  
+  // Capturer le point de départ du toucher
+  flashCard.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, false);
+  
+  // Capturer le point de fin du toucher
+  flashCard.addEventListener('touchend', function(e) {
+    if (!startX || !startY) return;
+    
+    endX = e.changedTouches[0].clientX;
+    endY = e.changedTouches[0].clientY;
+    
+    // Calculer la distance et la direction
+    const deltaX = endX - startX;
+    const deltaY = endY - startY;
+    
+    // Si le mouvement est principalement horizontal (éviter les swipes diagonaux)
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+      // Empêcher le clic sur les éléments interactifs
+      if (e.target.closest('button, a, .star')) return;
+      
+      if (deltaX > 0) {
+        // Swipe vers la droite (précédent)
+        navigateCards('prev');
+      } else {
+        // Swipe vers la gauche (suivant)
+        navigateCards('next');
+      }
+      
+      // Empêcher d'autres actions (comme le flip de la carte)
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, false);
+}
+
+// 2. Fonction pour jouer l'audio via Amazon Polly au lieu de Google TTS
+function playAudio(word) {
+  fetch('/espagnol/api/polly/speak', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: word, language: 'es-ES' })
+  })
+  .then(response => response.blob())
+  .then(audioBlob => {
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+    audio.play().catch(err => {
+      console.error("Erreur de lecture:", err);
+      // Fallback à Google TTS
+      const googleUrl = 'https://translate.google.com/translate_tts?ie=UTF-8&q=' 
+                + encodeURIComponent(word) 
+                + '&tl=es&client=tw-ob';
+      new Audio(googleUrl).play();
+    });
+  })
+  .catch(err => {
+    console.error("Erreur API:", err);
+    // Fallback à Google TTS
+    const googleUrl = 'https://translate.google.com/translate_tts?ie=UTF-8&q=' 
+              + encodeURIComponent(word) 
+              + '&tl=es&client=tw-ob';
+    new Audio(googleUrl).play();
+  });
+}
+
+// 3. Initialisation des fonctionnalités lors du chargement de la page
+window.addEventListener('DOMContentLoaded', function() {
+  // Initialiser la détection de swipe sur mobile
+  handleTouchSwipe();
+  
+  // Remplacer la fonction playAudio existante
+  
+  // Initialiser le reste des fonctionnalités existantes
+ 
+  const starContainer = document.getElementById('note-rating');
+  if(starContainer) {
+    starContainer.querySelectorAll('.star').forEach(function(starElem) {
+      starElem.addEventListener('click', function() {
+        const ratingValue = parseInt(starElem.getAttribute('data-value'));
+        const wordId = starContainer.getAttribute('data-id');
+        starContainer.querySelectorAll('.star').forEach(function(s) {
+          if (parseInt(s.getAttribute('data-value')) <= ratingValue) {
+            s.classList.add('selected');
+          } else {
+            s.classList.remove('selected');
+          }
+        });
+        fetch('/espagnol/update_note', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: wordId, note: ratingValue })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status !== 'success') {
+            console.error('Erreur lors de la mise à jour de la note');
+          }
+        })
+        .catch(error => console.error('Erreur:', error));
+      });
+    });
+  }
+});
+
+
+
+    const atEnd = {{ 'true' if end else 'false' }};
+    const currentIndex = {{ index }};
+    let isFlipped = false;
+    
+    // Fonction pour retourner la carte
+    function flipCard() {
+      const flashCard = document.getElementById('flashCard');
+      if (flashCard) {
+        isFlipped = !isFlipped;
+        if (isFlipped) {
+          flashCard.classList.add('flipped');
+        } else {
+          flashCard.classList.remove('flipped');
+        }
+      }
+    }
+    
+    // Fonction pour naviguer entre les cartes
+    function navigateCards(direction) {
+      if (atEnd === true) return;
+      
+      let nextIndex;
+      if (direction === 'prev') {
+        nextIndex = Math.max(0, currentIndex - 1);
+      } else {
+        nextIndex = currentIndex + 1;
+      }
+      
+      window.location.href = `/espagnol/flashcard?tag={{ tag_filter }}&rating={{ rating_filter }}&index=${nextIndex}`;
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (atEnd === true) return;
+      if (e.key === "Enter") {
+        if (isFlipped) {
+          navigateCards('next');
+        } else {
+          flipCard();
+        }
+      }
+      if (e.key === "ArrowLeft") navigateCards('prev');
+      if (e.key === "ArrowRight") navigateCards('next');
+    });
+
+    const flashCard = document.getElementById('flashCard');
+    if (flashCard) {
+      flashCard.addEventListener('click', function(e) {
+        if (!e.target.closest('button, a, .star')) {
+          flipCard();
+        }
+      });
+    }
+
+    window.onload = function() {
+      {% if word %}
+    // Utiliser un délai pour s'assurer que tout est chargé
+    setTimeout(() => {
+      playAudio('{{ word.word }}');
+    }, 500);
+  {% endif %}
+
+      const starContainer = document.getElementById('note-rating');
+      if(starContainer) {
+        starContainer.querySelectorAll('.star').forEach(function(starElem) {
+          starElem.addEventListener('click', function() {
+            const ratingValue = parseInt(starElem.getAttribute('data-value'));
+            const wordId = starContainer.getAttribute('data-id');
+            starContainer.querySelectorAll('.star').forEach(function(s) {
+              if (parseInt(s.getAttribute('data-value')) <= ratingValue) {
+                s.classList.add('selected');
+              } else {
+                s.classList.remove('selected');
+              }
+            });
+            fetch('/espagnol/update_note', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: wordId, note: ratingValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.status !== 'success') {
+                console.error('Erreur lors de la mise à jour de la note');
+              }
+            })
+            .catch(error => console.error('Erreur:', error));
+          });
+        });
+      }
+    };
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

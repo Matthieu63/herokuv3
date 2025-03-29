@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestion des Tags</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts - Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+  <!-- CSS existant -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  
+  <style>
+    :root {
+      --primary-color: #3f51b5;
+      --secondary-color: #ff4081;
+      --background-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+    
+    .navbar {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .container-main {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .page-title {
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    /* Cards */
+    .card-custom {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      margin-bottom: 20px;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .card-custom:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-header-custom {
+      background-color: rgba(63, 81, 181, 0.05);
+      border-bottom: 1px solid #eee;
+      padding: 15px 20px;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+    
+    .card-body-custom {
+      padding: 20px;
+    }
+    
+    /* Tag list styling */
+    .tag-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .tag-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 15px;
+      margin-bottom: 8px;
+      background-color: #fff;
+      border-radius: var(--border-radius);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s;
+    }
+    
+    .tag-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    .tag-name {
+      font-weight: 500;
+      font-size: 1.1rem;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+    }
+    
+    .tag-name i {
+      margin-right: 10px;
+      color: #666;
+    }
+    
+    .tag-count {
+      background-color: #e9ecef;
+      color: #495057;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-left: 10px;
+    }
+    
+    .delete-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2em;
+      color: #dc3545;
+      transition: all 0.3s;
+    }
+    
+    .delete-button:hover {
+      color: #bd2130;
+      transform: scale(1.1);
+    }
+    
+    /* Form styling */
+    .add-form {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    
+    .add-form input[type="text"] {
+      flex: 1;
+      padding: 10px 15px;
+      font-size: 1rem;
+      border: 1px solid #ced4da;
+      border-radius: var(--border-radius) 0 0 var(--border-radius);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    
+    .add-form input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(63, 81, 181, 0.25);
+    }
+    
+    .add-form button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: var(--primary-color);
+      border: none;
+      color: white;
+      border-radius: 0 var(--border-radius) var(--border-radius) 0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .add-form button:hover {
+      background-color: #303f9f;
+    }
+    
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 30px;
+      color: #6c757d;
+    }
+    
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      color: #adb5bd;
+    }
+    
+    /* Footer */
+    .footer-custom {
+      background-color: #f1f1f1;
+      padding: 30px 0;
+      margin-top: 50px;
+      color: #666;
+    }
+    
+    .footer-custom a {
+      color: #666;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-custom a:hover {
+      color: var(--primary-color);
+    }
+    
+    /* Confirmation modal */
+    .modal-backdrop {
+      background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+      border: none;
+      border-radius: var(--border-radius);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    
+    .modal-header {
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #eee;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+    
+    .modal-footer {
+      border-top: 1px solid #eee;
+    }
+    
+    /* Toast notification */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1050;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">
+      <i class="fas fa-language"></i> Apprendre l'Espagnol
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/"><i class="fas fa-book"></i> Vocabulaire</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/flashcard"><i class="fas fa-clone"></i> Flash Cards</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/dialogues"><i class="fas fa-comments"></i> Dialogues</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/stories"><i class="fas fa-book-open"></i> Histoires</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  <div class="container container-main">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="page-title mb-0"><i class="fas fa-tags me-2"></i>Gestion des Tags</h1>
+      <a href="/" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-2"></i>Retour à l'accueil
+      </a>
+    </div>
+    
+    <!-- Messages flash pour les notifications -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show mb-4">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    
+    <!-- Formulaire pour ajouter un nouveau tag -->
+    <div class="card card-custom mb-4">
+      <div class="card-header-custom">
+        <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Ajouter un nouveau tag</h4>
+      </div>
+      <div class="card-body-custom">
+        <form method="POST" class="add-form">
+          <input type="text" name="new_tag" placeholder="Nom du nouveau tag" required class="form-control">
+          <button type="submit" class="btn">
+            <i class="fas fa-plus me-2"></i>Ajouter
+          </button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Liste des tags avec bouton de suppression -->
+    <div class="card card-custom">
+      <div class="card-header-custom">
+        <h4 class="mb-0"><i class="fas fa-list me-2"></i>Tags existants</h4>
+      </div>
+      <div class="card-body-custom">
+        {% if tags|length > 0 %}
+          <ul class="tag-list">
+            {% for tag in tags %}
+              <li class="tag-item" id="tag-{{ tag.name|replace(' ', '-') }}">
+                <div class="tag-name">
+                  <i class="fas fa-tag"></i>
+                  {{ tag.name }}
+                  {% if tag.count is defined %}
+                    <span class="tag-count">{{ tag.count }} mot{{ 's' if tag.count != 1 }}</span>
+                  {% endif %}
+                </div>
+                <button type="button" class="delete-button" data-tag="{{ tag.name }}" title="Supprimer ce tag">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-icon">
+              <i class="fas fa-tags"></i>
+            </div>
+            <h4>Aucun tag disponible</h4>
+            <p>Ajoutez votre premier tag en utilisant le formulaire ci-dessus.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de confirmation pour la suppression -->
+  <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-exclamation-triangle text-warning me-2"></i>Confirmation</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer le tag <strong id="tagToDelete"></strong> ?</p>
+          <p class="text-muted"><small>Cette action supprimera ce tag de tous les mots associés.</small></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <form method="POST" id="deleteTagForm">
+            <input type="hidden" name="delete_tag" id="deleteTagInput">
+            <button type="submit" class="btn btn-danger">
+              <i class="fas fa-trash me-2"></i>Supprimer
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container pour les toasts -->
+  <div class="toast-container"></div>
+  
+  <!-- Footer -->
+  <footer class="footer-custom">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 text-md-start text-center mb-3 mb-md-0">
+          <h5>Navigation rapide</h5>
+          <div class="d-flex flex-column flex-md-row justify-content-md-start justify-content-center">
+            <a href="/" class="me-md-3">Vocabulaire</a>
+            <a href="/espagnol/flashcard" class="me-md-3">Flash Cards</a>
+            <a href="espagnol/dialogues" class="me-md-3">Dialogues</a>
+            <a href="espagnol/stories">Histoires</a>
+          </div>
+        </div>
+        <div class="col-md-6 text-md-end text-center">
+          <p class="mb-0">© 2025 Apprendre l'Espagnol - Tous droits réservés</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM content loaded');
+      
+      // Initialisation du modal explicite
+      let deleteConfirmModal;
+      try {
+        deleteConfirmModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        console.log('Modal initialized:', deleteConfirmModal);
+      } catch (e) {
+        console.error('Error initializing modal:', e);
+      }
+      
+      // Vérifier que les éléments nécessaires existent
+      const tagToDeleteElement = document.getElementById('tagToDelete');
+      const deleteTagInput = document.getElementById('deleteTagInput');
+      const deleteTagForm = document.getElementById('deleteTagForm');
+      
+      if (!tagToDeleteElement) console.error('Element tagToDelete not found');
+      if (!deleteTagInput) console.error('Element deleteTagInput not found');
+      if (!deleteTagForm) console.error('Element deleteTagForm not found');
+      
+      // Fonction pour créer des notifications toast
+      window.showToast = function(message, type = 'success') {
+        console.log('Showing toast:', message, type);
+        const toastContainer = document.querySelector('.toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type} border-0`;
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+        
+        toast.innerHTML = `
+          <div class="d-flex">
+            <div class="toast-body">
+              <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
+              ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+        bsToast.show();
+        
+        toast.addEventListener('hidden.bs.toast', function() {
+          toastContainer.removeChild(toast);
+        });
+      };
+      
+      // Gestion des boutons de suppression
+      const deleteButtons = document.querySelectorAll('.delete-button');
+      console.log('Delete buttons found:', deleteButtons.length);
+      
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          console.log('Delete button clicked');
+          e.preventDefault();
+          const tagName = this.getAttribute('data-tag');
+          console.log('Tag name to delete:', tagName);
+          
+          if (tagToDeleteElement) tagToDeleteElement.textContent = tagName;
+          if (deleteTagInput) deleteTagInput.value = tagName;
+          
+          // Ouvrir le modal de confirmation
+          if (deleteConfirmModal) {
+            console.log('Opening modal');
+            deleteConfirmModal.show();
+          } else {
+            console.error('Modal not initialized');
+            // Essayer de récupérer le modal si l'initialisation a échoué
+            try {
+              const modalElement = document.getElementById('deleteConfirmModal');
+              if (modalElement) {
+                const tempModal = new bootstrap.Modal(modalElement);
+                tempModal.show();
+              } else {
+                console.error('Modal element not found');
+              }
+            } catch (e) {
+              console.error('Failed to open modal:', e);
+            }
+          }
+        });
+      });
+      
+      // Intercepter le formulaire d'ajout pour validation côté client
+      const addForm = document.querySelector('.add-form');
+      if (addForm) {
+        addForm.addEventListener('submit', function(e) {
+          const tagInput = this.querySelector('input[name="new_tag"]');
+          const tagName = tagInput.value.trim();
+          
+          if (!tagName) {
+            e.preventDefault();
+            window.showToast('Veuillez entrer un nom de tag', 'danger');
+            return;
+          }
+          
+          // Vérifier si le tag existe déjà côté client
+          const existingTags = Array.from(document.querySelectorAll('.tag-name')).map(el => {
+            // Extraire le texte en ignorant les éléments enfants (comme les compteurs)
+            const textContent = el.childNodes[1].textContent.trim();
+            return textContent.toLowerCase();
+          });
+          
+          console.log('Existing tags:', existingTags);
+          
+          if (existingTags.includes(tagName.toLowerCase())) {
+            e.preventDefault();
+            window.showToast(`Le tag "${tagName}" existe déjà.`, 'danger');
+            tagInput.focus();
+          } else {
+            // Ajouter une animation de chargement pour indiquer l'envoi
+            const submitButton = addForm.querySelector('button[type="submit"]');
+            const originalButtonContent = submitButton.innerHTML;
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Ajout en cours...';
+            
+            // Le formulaire sera soumis normalement
+            // Rétablir l'état du bouton après un délai (au cas où le rechargement de page prend du temps)
+            setTimeout(() => {
+              submitButton.disabled = false;
+              submitButton.innerHTML = originalButtonContent;
+            }, 3000);
+          }
+        });
+      }
+      
+      // Formulaire de suppression avec feedback
+      if (deleteTagForm) {
+        deleteTagForm.addEventListener('submit', function(e) {
+          console.log('Delete form submitted');
+          e.preventDefault();
+          
+          const tagName = deleteTagInput.value;
+          console.log('Attempting to delete tag:', tagName);
+          
+          // Trouver l'élément de liste du tag avec une regex qui remplace tous les espaces
+          const tagId = `tag-${tagName.replace(/\s+/g, '-')}`;
+          console.log('Looking for tag element with ID:', tagId);
+          
+          const tagItem = document.getElementById(tagId);
+          if (tagItem) {
+            console.log('Tag element found, applying animation');
+            tagItem.style.backgroundColor = '#ffdddd';
+            tagItem.style.transition = 'opacity 0.5s, transform 0.5s, background-color 0.3s';
+            tagItem.style.opacity = '0';
+            tagItem.style.transform = 'translateX(20px)';
+          } else {
+            console.error('Tag element not found');
+          }
+          
+          // Désactiver le bouton de suppression pendant le traitement
+          const submitButton = this.querySelector('button[type="submit"]');
+          submitButton.disabled = true;
+          submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Suppression...';
+          
+          // Soumettre le formulaire en AJAX
+          const formData = new FormData(this);
+          
+          fetch(window.location.href, {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => {
+            console.log('Server response:', response);
+            if (response.ok) {
+              if (deleteConfirmModal) {
+                deleteConfirmModal.hide();
+              } else {
+                // Fermer manuellement le modal si l'instance n'est pas disponible
+                const modalElement = document.getElementById('deleteConfirmModal');
+                if (modalElement) {
+                  const tempModal = bootstrap.Modal.getInstance(modalElement);
+                  if (tempModal) tempModal.hide();
+                }
+              }
+              
+              // Supprimer visuellement l'élément après animation
+              setTimeout(() => {
+                if (tagItem) {
+                  console.log('Removing tag element from DOM');
+                  tagItem.remove();
+                }
+                
+                window.showToast(`Le tag "${tagName}" a été supprimé.`);
+                
+                // Si la liste est maintenant vide, afficher l'état vide
+                const tagList = document.querySelector('.tag-list');
+                if (tagList && tagList.children.length === 0) {
+                  console.log('Tag list is now empty, showing empty state');
+                  const emptyState = `
+                    <div class="empty-state">
+                      <div class="empty-icon">
+                        <i class="fas fa-tags"></i>
+                      </div>
+                      <h4>Aucun tag disponible</h4>
+                      <p>Ajoutez votre premier tag en utilisant le formulaire ci-dessus.</p>
+                    </div>
+                  `;
+                  tagList.innerHTML = emptyState;
+                }
+              }, 500);
+            } else {
+              console.error('Server returned error status');
+              window.showToast(`Erreur lors de la suppression du tag "${tagName}".`, 'danger');
+              
+              // Réactiver le bouton
+              submitButton.disabled = false;
+              submitButton.innerHTML = '<i class="fas fa-trash me-2"></i>Supprimer';
+            }
+          })
+          .catch(error => {
+            console.error('Error during fetch:', error);
+            window.showToast('Erreur lors de la suppression du tag.', 'danger');
+            
+            // Réactiver le bouton
+            submitButton.disabled = false;
+            submitButton.innerHTML = '<i class="fas fa-trash me-2"></i>Supprimer';
+          });
+        });
+      }
+      
+      // Animation des éléments de la liste
+      const tagItems = document.querySelectorAll('.tag-item');
+      tagItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        
+        setTimeout(() => {
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0)';
+        }, 100 + (index * 50));
+      });
+    });
+  </script>
+</body>
+</html>

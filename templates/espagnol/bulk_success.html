@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ajout réussi</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Navbar unifiée à ajouter en haut de chaque page -->
+<!-- Version corrigée de la barre de navigation pour tous les templates -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">
+      <i class="fas fa-language"></i> Apprendre l'Espagnol
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/"><i class="fas fa-book"></i> Vocabulaire</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/flashcard"><i class="fas fa-clone"></i> Flash Cards</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/dialogues"><i class="fas fa-comments"></i> Dialogues</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/espagnol/stories"><i class="fas fa-book-open"></i> Histoires</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      text-align: center;
+      padding-top: 50px;
+    }
+    .confirmation-box {
+      max-width: 500px;
+      margin: auto;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .confirmation-box h1 {
+      font-size: 24px;
+      color: #28a745;
+    }
+    .confirmation-box p {
+      font-size: 18px;
+      color: #333;
+    }
+    .btn-primary {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="confirmation-box">
+    <h1>✅ Ajout Réussi !</h1>
+    <p>{{ words_count }} mots ont été ajoutés avec succès.</p>
+
+    <a href="/" class="btn btn-primary">🏠 Retour à l'accueil</a>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

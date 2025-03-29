@@ -1,0 +1,33 @@
+{
+    "admin": {
+      "password": "admin",
+      "is_admin": true,
+      "is_super_admin": true,
+      "access": {
+        "languages": [
+          "français",
+          "espagnol", "anglais", "portugais"
+        ],
+        "modules": [
+          "christ",
+          "culture",
+          "recettes"
+        ]
+      }
+    },
+    "user1": {
+      "password": "userpass",
+      "is_admin": false,
+      "is_super_admin": false,
+      "access": {
+        "languages": [
+          "espagnol"
+        ],
+        "modules": [
+          "recettes",
+          "culture"
+        ]
+      }
+    }
+    
+  }

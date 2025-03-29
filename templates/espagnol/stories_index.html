@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histoires en Espagnol</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Navbar unifiée à ajouter en haut de chaque page -->
+<!-- Version corrigée de la barre de navigation pour tous les templates -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <i class="fas fa-language"></i> Apprendre l'Espagnol
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/"><i class="fas fa-book"></i> Vocabulaire</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/flashcard"><i class="fas fa-clone"></i> Flash Cards</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/dialogues"><i class="fas fa-comments"></i> Dialogues</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/espagnol/stories"><i class="fas fa-book-open"></i> Histoires</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+    <style>
+        .story-card {
+            transition: transform 0.2s;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #e9ecef;
+            padding: 3px 8px;
+            margin: 2px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+        .star {
+            color: #ffc107;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+        }
+        .create-btn {
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .delete-btn {
+            color: #dc3545;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 5px;
+            font-size: 1.1rem;
+        }
+        .delete-btn:hover {
+            color: #a71d2a;
+        }
+        .no-stories {
+            text-align: center;
+            padding: 30px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .navbar {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="navbar bg-light p-3 rounded">
+            <h1>🇪🇸 Histoires en Espagnol</h1>
+            <div>
+                <a href="/" class="btn btn-outline-primary me-2">Vocabulaire</a>
+                <a href="{{ url_for('dialogues.dialogues_index') }}" class="btn btn-outline-primary">Dialogues</a>
+            </div>
+        </div>
+
+        <!-- Messages flash -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Bouton de création -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Toutes les histoires</h2>
+            <a href="{{ url_for('stories_esp.create') }}" class="btn btn-success create-btn">
+                <i class="fas fa-plus-circle me-2"></i>Créer une nouvelle histoire
+            </a>
+        </div>
+
+        <!-- Liste des histoires -->
+        <div class="row">
+            {% if stories %}
+                {% for story in stories %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card story-card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">{{ story.title }}</h5>
+                                <button class="delete-btn" onclick="deleteStory({{ story.id }})" title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <!-- Étoiles basées sur la note -->
+                                <div class="mb-2">
+                                    {% if story.rating %}
+                                        {% for i in range(story.rating) %}
+                                            <span class="star">★</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <small class="text-muted">Pas de note</small>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Tags -->
+                                <div class="mb-3">
+                                    {% if story.tags %}
+                                        {% for tag in story.tags.split(',') %}
+                                            <span class="tag">{{ tag.strip() }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <small class="text-muted">Pas de tags</small>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Date de création -->
+                                <p class="text-muted mb-2">
+                                    <i class="far fa-calendar-alt me-1"></i>
+                                    {{ story.creation_date.split('T')[0] if 'T' in story.creation_date else story.creation_date.split(' ')[0] }}
+                                </p>
+                                
+                                <!-- Thème si disponible -->
+                                {% if story.theme %}
+                                    <p class="mb-3"><small>Thème: {{ story.theme }}</small></p>
+                                {% endif %}
+                                
+                                <a href="{{ url_for('stories_esp.view', story_id=story.id) }}" class="btn btn-primary w-100">
+                                    Voir les dialogues
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 no-stories">
+                    <i class="fas fa-book fa-3x mb-3 text-muted"></i>
+                    <h3>Aucune histoire n'a encore été créée</h3>
+                    <p class="text-muted">Cliquez sur "Créer une nouvelle histoire" pour commencer !</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de suppression -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer cette histoire ? Cette action est irréversible.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let storyToDelete = null;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        
+        function deleteStory(storyId) {
+            storyToDelete = storyId;
+            deleteModal.show();
+        }
+        
+        document.getElementById('confirmDelete').addEventListener('click', function() {
+            if (storyToDelete) {
+                fetch(`/espagnol/stories/delete/${storyToDelete}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        deleteModal.hide();
+                        window.location.reload();
+                    } else {
+                        alert('Erreur lors de la suppression: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Une erreur est survenue.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
